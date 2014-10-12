@@ -130,21 +130,32 @@ function initBuffers() {
     cubeVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     colors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [1.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 1.0, 0.0, 1.0], // Top face
-        [1.0, 0.5, 0.5, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 0.0, 1.0, 1.0]  // Left face
+        1.0, 0.0, 0.0, 1.0, // Front face
+        1.0, 0.0, 0.0, 1.0, // Front face
+        1.0, 0.0, 0.0, 1.0, // Front face
+        1.0, 0.0, 0.0, 1.0, // Front face
+        1.0, 1.0, 0.0, 1.0, // Back face
+        1.0, 1.0, 0.0, 1.0, // Back face
+        1.0, 1.0, 0.0, 1.0, // Back face
+        1.0, 1.0, 0.0, 1.0, // Back face
+        0.0, 1.0, 0.0, 1.0, // Top face
+        0.0, 1.0, 0.0, 1.0, // Top face
+        0.0, 1.0, 0.0, 1.0, // Top face
+        0.0, 1.0, 0.0, 1.0, // Top face
+        1.0, 0.5, 0.5, 1.0, // Bottom face
+        1.0, 0.5, 0.5, 1.0, // Bottom face
+        1.0, 0.5, 0.5, 1.0, // Bottom face
+        1.0, 0.5, 0.5, 1.0, // Bottom face
+        1.0, 0.0, 1.0, 1.0, // Right face
+        1.0, 0.0, 1.0, 1.0, // Right face
+        1.0, 0.0, 1.0, 1.0, // Right face
+        1.0, 0.0, 1.0, 1.0, // Right face
+        0.0, 0.0, 1.0, 1.0,  // Left face
+        0.0, 0.0, 1.0, 1.0,  // Left face
+        0.0, 0.0, 1.0, 1.0,  // Left face
+        0.0, 0.0, 1.0, 1.0  // Left face
     ];
-    var unpackedColors = [];
-    for (var i in colors) {
-        var color = colors[i];
-        for (var j=0; j < 4; j++) {
-            unpackedColors = unpackedColors.concat(color);
-        }
-    }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     cubeVertexColorBuffer.itemSize = 4;
     cubeVertexColorBuffer.numItems = 24;
 
@@ -249,7 +260,7 @@ function tick() {
     drawScene();
 }
 
-function webGLStart() {
+function main() {
     var canvas = document.getElementById("gl-canvas");
     initGL(canvas);
     initShaders();
