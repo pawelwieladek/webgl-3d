@@ -70,8 +70,17 @@ function main() {
         addUniform: function(key, name) {
             this.uniforms[key] = this.GL.getUniformLocation(this.shaderProgram, name);
         },
-        setUniformMatrix: function(key, matrix) {
+        setUniformMatrix4: function(key, matrix) {
             this.GL.uniformMatrix4fv(this.uniforms[key], false, matrix);
+        },
+        setUniformMatrix3: function(key, matrix) {
+            this.GL.uniformMatrix3fv(this.uniforms[key], false, matrix);
+        },
+        setUniformVector3: function(key, vector3) {
+            this.GL.uniform3fv(this.uniforms[key], vector3);
+        },
+        setUniformValue: function(key, value) {
+            this.GL.uniform1f(this.uniforms[key], value);
         }
     };
 
@@ -116,6 +125,7 @@ function main() {
 
     function Primitive() {
         this.vertices = null;
+        this.normals = null;
         this.colors = null;
         this.indices = null;
     }
@@ -123,6 +133,9 @@ function main() {
     Primitive.prototype = {
         getVertices: function() {
             return this.vertices;
+        },
+        getNormals: function() {
+            return this.normals;
         },
         getColors: function() {
             return this.colors;
@@ -171,6 +184,47 @@ function main() {
                 -1.0, -1.0, 1.0,
                 -1.0, 1.0, 1.0,
                 -1.0, 1.0, -1.0
+            ],
+            itemSize: 3,
+            numItems: 24
+        };
+        this.normals = {
+            elements: [
+                // Front face
+                0.0, 0.0, 1.0,
+                0.0, 0.0, 1.0,
+                0.0, 0.0, 1.0,
+                0.0, 0.0, 1.0,
+
+                // Back face
+                0.0, 0.0, -1.0,
+                0.0, 0.0, -1.0,
+                0.0, 0.0, -1.0,
+                0.0, 0.0, -1.0,
+
+                // Top face
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 0.0,
+
+                // Bottom face
+                0.0, -1.0, 0.0,
+                0.0, -1.0, 0.0,
+                0.0, -1.0, 0.0,
+                0.0, -1.0, 0.0,
+
+                // Right face
+                1.0, 0.0, 0.0,
+                1.0, 0.0, 0.0,
+                1.0, 0.0, 0.0,
+                1.0, 0.0, 0.0,
+
+                // Left face
+                -1.0, 0.0, 0.0,
+                -1.0, 0.0, 0.0,
+                -1.0, 0.0, 0.0,
+                -1.0, 0.0, 0.0
             ],
             itemSize: 3,
             numItems: 24
@@ -225,21 +279,37 @@ function main() {
         this.GL = GL;
         this.positionBuffer = new VertexBufferObject(GL);
         this.colorBuffer = new VertexBufferObject(GL);
+        this.normalBuffer = new VertexBufferObject(GL);
         this.indexBuffer = new IndexBufferObject(GL);
 
         this.positionBuffer.init(primitive.getVertices().elements, primitive.getVertices().itemSize, primitive.getVertices().numItems);
         this.colorBuffer.init(primitive.getColors().elements, primitive.getColors().itemSize, primitive.getColors().numItems);
+        this.normalBuffer.init(primitive.getNormals().elements, primitive.getNormals().itemSize, primitive.getNormals().numItems);
         this.indexBuffer.init(primitive.getIndices().elements, primitive.getIndices().itemSize, primitive.getIndices().numItems);
     }
 
     Drawable.prototype = {
-        draw: function(shaderProgram, projectionMatrix, modelViewMatrix) {
+        draw: function(shaderProgram, projectionMatrix, modelViewMatrix, state) {
             this.positionBuffer.bind(shaderProgram.getAttribute("vertexPositionAttribute"));
+            this.normalBuffer.bind(shaderProgram.getAttribute("vertexNormalAttribute"));
             this.colorBuffer.bind(shaderProgram.getAttribute("vertexColorAttribute"));
             this.indexBuffer.bind();
 
-            shaderProgram.setUniformMatrix("pMatrixUniform", projectionMatrix);
-            shaderProgram.setUniformMatrix("mvMatrixUniform", modelViewMatrix);
+            var normalMatrix = mat3.create();
+            mat3.fromMat4(normalMatrix, modelViewMatrix);
+            mat3.invert(normalMatrix, normalMatrix);
+            mat3.transpose(normalMatrix, normalMatrix);
+
+            shaderProgram.setUniformMatrix4("pMatrixUniform", projectionMatrix);
+            shaderProgram.setUniformMatrix4("mvMatrixUniform", modelViewMatrix);
+            shaderProgram.setUniformMatrix3("nMatrixUniform", normalMatrix);
+
+            shaderProgram.setUniformValue("materialShininessUniform", state.materialShininess);
+
+            shaderProgram.setUniformVector3("ambientColorUniform", state.ambientLight);
+            shaderProgram.setUniformVector3("pointLightingLocationUniform", state.lightPosition);
+            shaderProgram.setUniformVector3("pointLightingSpecularColorUniform", state.specularLight);
+            shaderProgram.setUniformVector3("pointLightingDiffuseColorUniform", state.diffuseLight);
 
             this.GL.drawElements(this.GL.TRIANGLES, this.indexBuffer.numItems, this.GL.UNSIGNED_SHORT, 0);
         }
@@ -277,10 +347,16 @@ function main() {
             shaderProgram.run();
 
             shaderProgram.addAttribute("vertexPositionAttribute", "aVertexPosition");
+            shaderProgram.addAttribute("vertexNormalAttribute", "aVertexNormal");
             shaderProgram.addAttribute("vertexColorAttribute", "aVertexColor");
 
             shaderProgram.addUniform("pMatrixUniform", "uPMatrix");
             shaderProgram.addUniform("mvMatrixUniform", "uMVMatrix");
+            shaderProgram.addUniform("nMatrixUniform", "uNMatrix");
+            shaderProgram.addUniform("materialShininessUniform", "uMaterialShininess");
+            shaderProgram.addUniform("pointLightingLocationUniform", "uPointLightingLocation");
+            shaderProgram.addUniform("pointLightingSpecularColorUniform", "uPointLightingSpecularColor");
+            shaderProgram.addUniform("pointLightingDiffuseColorUniform", "uPointLightingDiffuseColor");
         }
         function initMatrices() {
             projectionMatrix = mat4.create();
@@ -304,9 +380,11 @@ function main() {
             mat4.perspective(this.projectionMatrix, 45, this.GL.viewportWidth / this.GL.viewportHeight, 0.1, 100.0);
             mat4.identity(this.modelViewMatrix);
             mat4.translate(this.modelViewMatrix, this.modelViewMatrix, [state.x, state.y, state.z]);
+            mat4.scale(this.modelViewMatrix, this.modelViewMatrix, [6.0, 1.0, 6.0]);
+
             var cubeData = new Cube();
             var drawableCube = new Drawable(this.GL, cubeData);
-            drawableCube.draw(this.shaderProgram, this.projectionMatrix, this.modelViewMatrix);
+            drawableCube.draw(this.shaderProgram, this.projectionMatrix, this.modelViewMatrix, state);
         },
         drawScene: function() {
             this.GL.viewport(0, 0, this.GL.viewportWidth, this.GL.viewportHeight);
@@ -314,7 +392,7 @@ function main() {
         },
         init: function() {
             if (this.GL) {
-                this.GL.clearColor(0.0, 0.0, 0.0, 1.0);                                 // Set clear color to black, fully opaque
+                this.GL.clearColor(0.5, 0.5, 0.5, 1.0);                                 // Set clear color to black, fully opaque
                 this.GL.enable(this.GL.DEPTH_TEST);                                     // Enable depth testing
                 this.GL.depthFunc(this.GL.LEQUAL);                                      // Near things obscure far things
                 this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);     // Clear the color as well as the depth buffer.
@@ -324,10 +402,16 @@ function main() {
         }
     };
 
+    // TODO: Move state to primitive parameters.
     function State() {
         this.x = 0.0;
         this.y = 0.0;
         this.z = 0.0;
+        this.ambientLight = vec3.fromValues(0.2, 0.2, 0.2);
+        this.diffuseLight = vec3.fromValues(0.8, 0.8, 0.8);
+        this.specularLight = vec3.fromValues(0.8, 0.8, 0.8);
+        this.lightPosition = vec3.fromValues(-10.0, 4.0, -20.0);
+        this.materialShininess = 32.0;
     }
 
     function Keyboard(state) {
