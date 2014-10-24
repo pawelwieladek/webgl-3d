@@ -6,83 +6,13 @@
     <script id="shader-fs" type="x-shader/x-fragment">
             precision highp float;
 
-            // inputs
 			varying vec3 vNormal;
 			varying vec4 vPosition;
 			varying vec4 vColor;
 
-			// program controls
-			uniform bool uUseLighting;
-
-			// ambient light applied to all points
-			uniform vec3 uAmbientColor;
-
-			// directional light
-			uniform bool uUseDirectionalLighting;
-			uniform vec3 uLightingDirection;
-			uniform vec3 uDirectionalColor;
-
-			// point light
-			uniform bool uUsePointLighting;
-			uniform vec3 uPointLightingLocation;
-			uniform vec3 uPointLightingSpecularColor;
-			uniform vec3 uPointLightingDiffuseColor;
-
-			// specular reflection
-			uniform bool uUseSpecularLighting;
-			uniform float uMaterialShininess;
-
-
 			void main(void)
 			{
-				vec3 lightWeight; // modulate object color
-
-				if (!uUseLighting) {
-					lightWeight = vec3(1.0, 1.0, 1.0); // no modulation
-				}
-				else // compute modulation due to lighting
-				{
-					lightWeight = uAmbientColor; // base lighting due to ambiant light
-
-					if (uUseDirectionalLighting)
-					{
-						// interpolated normal
-						vec3 normal = normalize(vNormal);
-						// contribution between 0 and 1
-						float directionalLightWeight = max(dot(normal, uLightingDirection), 0.0);
-						// add contribution
-						lightWeight += uDirectionalColor * directionalLightWeight;
-					}
-					if (uUsePointLighting)
-					{
-						// vector s is different for each point
-						vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
-						// interpolated normal
-						vec3 normal = normalize(vNormal);
-						// contribution between 0 and 1
-                        float diffuseLightWeight = max(dot(normal,lightDirection),0.0);
-                        // add contribution
-                        lightWeight += uPointLightingDiffuseColor * diffuseLightWeight;
-
-						// in this shader, we apply specular reflection only to point lights
-						if (uUseSpecularLighting)
-						{
-							// vector v from current point to camera. Camera is always at (0,0,0)
-							vec3 eyeDirection = normalize(-vPosition.xyz);
-							// vector r is the symmetric of s with respect to n
-							vec3 reflectionDirection = reflect(-lightDirection, normal);
-							// dot product, bounded in (0,1)
-							float v_dot_r = max(dot(reflectionDirection, eyeDirection),0.);
-							// apply exponent to tune the shininess
-							float specularLightWeight = pow( v_dot_r, uMaterialShininess);
-							// add contribution
-                            lightWeight += uPointLightingSpecularColor * specularLightWeight;
- 						}
- 					}
-				}
-				// Scale point color with lighting modulation.
-				gl_FragColor = vec4(vColor.rgb * lightWeight, vColor.a);
-
+				gl_FragColor = vColor;
 			}
     </script>
 

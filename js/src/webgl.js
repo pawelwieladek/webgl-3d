@@ -36,18 +36,6 @@ function WebGL(canvas) {
         shaderProgram.addUniform("pMatrixUniform", "uPMatrix");
         shaderProgram.addUniform("mvMatrixUniform", "uMVMatrix");
         shaderProgram.addUniform("nMatrixUniform", "uNMatrix");
-
-        shaderProgram.addUniform("useLighting", "uUseLighting");
-        shaderProgram.addUniform("ambientColor", "uAmbientColor");
-        shaderProgram.addUniform("useDirectionalLighting", "uUseDirectionalLighting");
-        shaderProgram.addUniform("lightingDirection", "uLightingDirection");
-        shaderProgram.addUniform("directionalColor", "uDirectionalColor");
-        shaderProgram.addUniform("usePointLighting", "uUsePointLighting");
-        shaderProgram.addUniform("pointLightingLocation", "uPointLightingLocation");
-        shaderProgram.addUniform("pointLightingSpecularColor", "uPointLightingSpecularColor");
-        shaderProgram.addUniform("pointLightingDiffuseColor", "uPointLightingDiffuseColor");
-        shaderProgram.addUniform("useSpecularLighting", "uUseSpecularLighting");
-        shaderProgram.addUniform("materialShininess", "uMaterialShininess");
     }
     function initMatrices() {
         projectionMatrix = mat4.create();

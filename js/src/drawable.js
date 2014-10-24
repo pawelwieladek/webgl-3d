@@ -27,22 +27,6 @@ Drawable.prototype = {
         shaderProgram.setUniformMatrix4("mvMatrixUniform", modelViewMatrix);
         shaderProgram.setUniformMatrix3("nMatrixUniform", normalMatrix);
 
-        shaderProgram.setUniformInteger("useLighting", state.useLighting);
-        shaderProgram.setUniformInteger("useDirectionalLighting", state.useDirectionalLighting);
-        shaderProgram.setUniformInteger("usePointLighting", state.usePointLighting);
-        shaderProgram.setUniformInteger("useSpecularLighting", state.useSpecularLighting);
-
-        shaderProgram.setUniformVector3("ambientColor", state.ambientColor);
-
-        shaderProgram.setUniformVector3("lightingDirection", state.lightingDirection);
-        shaderProgram.setUniformVector3("directionalColor", state.directionalColor);
-
-        shaderProgram.setUniformVector3("pointLightingLocation", state.pointLightingLocation);
-        shaderProgram.setUniformVector3("pointLightingDiffuseColor", state.pointLightingDiffuseColor);
-
-        shaderProgram.setUniformVector3("pointLightingSpecularColor", state.pointLightingSpecularColor);
-        shaderProgram.setUniformFloat("materialShininess", state.materialShininess);
-
         this.GL.drawElements(this.GL.TRIANGLES, this.indexBuffer.numItems, this.GL.UNSIGNED_SHORT, 0);
     }
 };
