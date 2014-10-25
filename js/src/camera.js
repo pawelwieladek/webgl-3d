@@ -1,4 +1,5 @@
 function Camera() {
+    this.viewMatrix = mat4.create();
     this.position = vec3.fromValues(0.0, 0.0, 0.0);
     this.direction = vec3.fromValues(0.0, 0.0, 1.0);
     this.up = vec3.fromValues(0.0, 1.0, 0.0);
@@ -7,6 +8,11 @@ function Camera() {
 }
 
 Camera.prototype = {
+    getViewMatrix: function() {
+        mat4.identity(this.viewMatrix);
+        mat4.lookAt(this.viewMatrix, this.position, this.direction, this.up);
+        return this.viewMatrix;
+    },
     moveUp: function() {
         vec3.add(this.position, this.position, vec3.fromValues(0.0, this.step, 0.0));
         vec3.add(this.direction, this.direction, vec3.fromValues(0.0, this.step, 0.0));
