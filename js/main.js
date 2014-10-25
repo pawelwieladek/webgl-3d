@@ -16,9 +16,10 @@ function main() {
 
     var canvas = document.getElementById("gl-canvas");
     var webGL = new WebGL(canvas);
-    webGL.init();
 
-    var animation = new Animation(webGL);
+    var scene = new Scene(webGL, camera);
+
+    var animation = new Animation(scene);
     animation.addHandler(keyboard);
-    animation.start(camera);
+    animation.start();
 }

@@ -1,5 +1,5 @@
-function Animation(webGL) {
-    this.webGL = webGL;
+function Animation(scene) {
+    this.scene = scene;
     this.handlers = [];
 
     window.requestAnimFrame = (function(callback) {
@@ -14,15 +14,15 @@ Animation.prototype = {
     addHandler: function(handler) {
         this.handlers.push(handler);
     },
-    start: function(camera) {
-        var webGL = this.webGL;
+    start: function() {
+        var scene = this.scene;
         var animation = this;
         function tick() {
             requestAnimFrame(tick);
             animation.handlers.forEach(function(handler) {
                 handler.handle();
             });
-            webGL.draw(camera);
+            scene.draw();
         }
         tick();
     }

@@ -42,35 +42,22 @@ function WebGL(canvas) {
 
     this.GL = GL;
     this.shaderProgram = shaderProgram;
-    this.projectionMatrix = mat4.create();
-    this.modelMatrix = mat4.create();
-    this.viewMatrix = mat4.create();
+
+    if (this.GL) {
+        this.GL.clearColor(0.5, 0.5, 0.5, 1.0);                                 // Set clear color to black, fully opaque
+        this.GL.enable(this.GL.DEPTH_TEST);                                     // Enable depth testing
+        this.GL.depthFunc(this.GL.LEQUAL);                                      // Near things obscure far things
+        this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);     // Clear the color as well as the depth buffer.
+    } else {
+        throw new Error("WebGL is not initialized.");
+    }
 }
 
 WebGL.prototype = {
-    drawScene: function() {
-        this.GL.viewport(0, 0, this.GL.viewportWidth, this.GL.viewportHeight);
-        this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);
+    getGL: function() {
+        return this.GL;
     },
-    draw: function(camera) {
-        this.drawScene();
-
-        mat4.perspective(this.projectionMatrix, 45, this.GL.viewportWidth / this.GL.viewportHeight, 0.1, 100.0);
-
-        var drawableFactory = new DrawableFactory(this.GL, this.shaderProgram);
-        var drawableCylinder = drawableFactory.createDrawable(new Cylinder());
-        mat4.identity(drawableCylinder.modelMatrix);
-        mat4.translate(drawableCylinder.modelMatrix, this.modelMatrix, vec3.fromValues(0.0, -0.5, -3.0));
-        drawableCylinder.draw(this.projectionMatrix, camera.getViewMatrix());
-    },
-    init: function() {
-        if (this.GL) {
-            this.GL.clearColor(0.5, 0.5, 0.5, 1.0);                                 // Set clear color to black, fully opaque
-            this.GL.enable(this.GL.DEPTH_TEST);                                     // Enable depth testing
-            this.GL.depthFunc(this.GL.LEQUAL);                                      // Near things obscure far things
-            this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);     // Clear the color as well as the depth buffer.
-        } else {
-            throw new Error("WebGL is not initialized.");
-        }
+    getShaderProgram: function() {
+        return this.shaderProgram;
     }
 };
