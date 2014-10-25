@@ -21,7 +21,8 @@
         attribute vec3 aVertexNormal;
         attribute vec4 aVertexColor;
 
-        uniform mat4 uMVMatrix;
+        uniform mat4 uMMatrix;
+        uniform mat4 uVMatrix;
         uniform mat4 uPMatrix;
         uniform mat3 uNMatrix;
 
@@ -30,7 +31,7 @@
         varying vec4 vPosition;
 
         void main(void) {
-            vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+            vPosition = uMMatrix * uVMatrix * vec4(aVertexPosition, 1.0);
             gl_Position = uPMatrix * vPosition;
             vColor = aVertexColor;
             vNormal = uNMatrix * aVertexNormal;
@@ -44,7 +45,7 @@
     <script type="text/javascript" src="js/src/primitives/cube.js"></script>
     <script type="text/javascript" src="js/src/primitives/cylider.js"></script>
     <script type="text/javascript" src="js/src/shader-program.js"></script>
-    <script type="text/javascript" src="js/src/state.js"></script>
+    <script type="text/javascript" src="js/src/camera.js"></script>
     <script type="text/javascript" src="js/src/webgl.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 </head>

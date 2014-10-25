@@ -2,8 +2,6 @@ function WebGL(canvas) {
 
     var GL = null;
     var shaderProgram = null;
-    var projectionMatrix = null;
-    var modelViewMatrix = null;
 
     function initGL(canvas) {
         try {
@@ -34,22 +32,19 @@ function WebGL(canvas) {
         shaderProgram.addAttribute("vertexColorAttribute", "aVertexColor");
 
         shaderProgram.addUniform("pMatrixUniform", "uPMatrix");
-        shaderProgram.addUniform("mvMatrixUniform", "uMVMatrix");
+        shaderProgram.addUniform("mMatrixUniform", "uMMatrix");
+        shaderProgram.addUniform("vMatrixUniform", "uVMatrix");
         shaderProgram.addUniform("nMatrixUniform", "uNMatrix");
-    }
-    function initMatrices() {
-        projectionMatrix = mat4.create();
-        modelViewMatrix = mat4.create();
     }
 
     initGL(canvas);
     initShaders();
-    initMatrices();
 
     this.GL = GL;
     this.shaderProgram = shaderProgram;
-    this.projectionMatrix = projectionMatrix;
-    this.modelViewMatrix = modelViewMatrix;
+    this.projectionMatrix = mat4.create();
+    this.modelMatrix = mat4.create();
+    this.viewMatrix = mat4.create();
 }
 
 WebGL.prototype = {
@@ -61,11 +56,18 @@ WebGL.prototype = {
         this.drawScene();
 
         mat4.perspective(this.projectionMatrix, 45, this.GL.viewportWidth / this.GL.viewportHeight, 0.1, 100.0);
-        mat4.identity(this.modelViewMatrix);
-        mat4.translate(this.modelViewMatrix, this.modelViewMatrix, [state.x, state.y, state.z]);
+
+        mat4.identity(this.modelMatrix);
+        mat4.translate(this.modelMatrix, this.modelMatrix, vec3.fromValues(0.0, -0.5, -3.0));
+
+        mat4.identity(this.viewMatrix);
+        var eye = vec3.fromValues(0.0, 0.0, 0.0);
+        var center = vec3.fromValues(0.0, 0.0, 1.0);
+        var up = vec3.fromValues(0.0, 1.0, 0.0);
+        mat4.lookAt(this.viewMatrix, eye, center, up);
 
         var drawableCylinder = new Drawable(this.GL, new Cylinder());
-        drawableCylinder.draw(this.shaderProgram, this.projectionMatrix, this.modelViewMatrix, state);
+        drawableCylinder.draw(this.shaderProgram, this.projectionMatrix, this.viewMatrix, this.modelMatrix);
     },
     init: function() {
         if (this.GL) {

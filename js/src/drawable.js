@@ -12,19 +12,22 @@ function Drawable(GL, primitive) {
 }
 
 Drawable.prototype = {
-    draw: function(shaderProgram, projectionMatrix, modelViewMatrix, state) {
+    draw: function(shaderProgram, projectionMatrix, viewMatrix, modelMatrix) {
         this.positionBuffer.bind(shaderProgram.getAttribute("vertexPositionAttribute"));
         this.normalBuffer.bind(shaderProgram.getAttribute("vertexNormalAttribute"));
         this.colorBuffer.bind(shaderProgram.getAttribute("vertexColorAttribute"));
         this.indexBuffer.bind();
 
         var normalMatrix = mat3.create();
+        var modelViewMatrix = mat4.create();
+        mat4.multiply(modelViewMatrix, modelMatrix, viewMatrix);
         mat3.fromMat4(normalMatrix, modelViewMatrix);
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
         shaderProgram.setUniformMatrix4("pMatrixUniform", projectionMatrix);
-        shaderProgram.setUniformMatrix4("mvMatrixUniform", modelViewMatrix);
+        shaderProgram.setUniformMatrix4("vMatrixUniform", viewMatrix);
+        shaderProgram.setUniformMatrix4("mMatrixUniform", modelMatrix);
         shaderProgram.setUniformMatrix3("nMatrixUniform", normalMatrix);
 
         this.GL.drawElements(this.GL.TRIANGLES, this.indexBuffer.numItems, this.GL.UNSIGNED_SHORT, 0);
