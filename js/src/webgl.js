@@ -52,7 +52,7 @@ WebGL.prototype = {
         this.GL.viewport(0, 0, this.GL.viewportWidth, this.GL.viewportHeight);
         this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);
     },
-    draw: function(state) {
+    draw: function(camera) {
         this.drawScene();
 
         mat4.perspective(this.projectionMatrix, 45, this.GL.viewportWidth / this.GL.viewportHeight, 0.1, 100.0);
@@ -61,10 +61,7 @@ WebGL.prototype = {
         mat4.translate(this.modelMatrix, this.modelMatrix, vec3.fromValues(0.0, -0.5, -3.0));
 
         mat4.identity(this.viewMatrix);
-        var eye = vec3.fromValues(0.0, 0.0, 0.0);
-        var center = vec3.fromValues(0.0, 0.0, 1.0);
-        var up = vec3.fromValues(0.0, 1.0, 0.0);
-        mat4.lookAt(this.viewMatrix, eye, center, up);
+        mat4.lookAt(this.viewMatrix, camera.position, camera.direction, camera.up);
 
         var drawableCylinder = new Drawable(this.GL, new Cylinder());
         drawableCylinder.draw(this.shaderProgram, this.projectionMatrix, this.viewMatrix, this.modelMatrix);

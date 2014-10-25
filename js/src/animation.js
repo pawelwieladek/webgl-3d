@@ -14,7 +14,7 @@ Animation.prototype = {
     addHandler: function(handler) {
         this.handlers.push(handler);
     },
-    start: function() {
+    start: function(camera) {
         var webGL = this.webGL;
         var animation = this;
         function tick() {
@@ -22,7 +22,7 @@ Animation.prototype = {
             animation.handlers.forEach(function(handler) {
                 handler.handle();
             });
-            webGL.draw();
+            webGL.draw(camera);
         }
         tick();
     }
