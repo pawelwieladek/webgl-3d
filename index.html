@@ -6,35 +6,35 @@
     <script id="shader-fs" type="x-shader/x-fragment">
             precision highp float;
 
-			varying vec3 vNormal;
-			varying vec4 vPosition;
-			varying vec4 vColor;
+			varying vec3 normal;
+			varying vec4 position;
+			varying vec4 color;
 
 			void main(void)
 			{
-				gl_FragColor = vColor;
+				gl_FragColor = color;
 			}
     </script>
 
     <script id="shader-vs" type="x-shader/x-vertex">
-        attribute vec3 aVertexPosition;
-        attribute vec3 aVertexNormal;
-        attribute vec4 aVertexColor;
+        attribute vec3 vertexPosition;
+        attribute vec3 vertexNormal;
+        attribute vec4 vertexColor;
 
-        uniform mat4 uMMatrix;
-        uniform mat4 uVMatrix;
-        uniform mat4 uPMatrix;
-        uniform mat3 uNMatrix;
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
 
-        varying vec4 vColor;
-        varying vec3 vNormal;
-        varying vec4 vPosition;
+        varying vec4 color;
+        varying vec3 normal;
+        varying vec4 position;
 
         void main(void) {
-            vPosition = uMMatrix * uVMatrix * vec4(aVertexPosition, 1.0);
-            gl_Position = uPMatrix * vPosition;
-            vColor = aVertexColor;
-            vNormal = uNMatrix * aVertexNormal;
+            position = viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+            color = vertexColor;
+            normal = normalMatrix * vertexNormal;
+            gl_Position = projectionMatrix * position;
         }
     </script>
     <script type="text/javascript" src="js/src/animation.js"></script>
@@ -56,7 +56,7 @@
     }
 </style>
 <body onload="main()">
-<canvas id="gl-canvas" width="1280" height="600">
+<canvas id="gl-canvas" width="600" height="400">
     Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
 </canvas>
 </body>

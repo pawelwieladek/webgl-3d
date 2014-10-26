@@ -19,7 +19,8 @@ Scene.prototype = {
         var drawableCylinder = drawableFactory.createDrawable(new Cylinder());
 
         mat4.identity(drawableCylinder.modelMatrix);
-        mat4.translate(drawableCylinder.modelMatrix, drawableCylinder.modelMatrix, vec3.fromValues(0.0, -0.5, -3.0));
+        mat4.translate(drawableCylinder.modelMatrix, drawableCylinder.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
+        mat4.scale(drawableCylinder.modelMatrix, drawableCylinder.modelMatrix, vec3.fromValues(6.0, 1.0, 6.0));
 
         drawableCylinder.draw(this.projectionMatrix, this.camera.getViewMatrix());
     }

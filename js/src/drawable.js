@@ -41,10 +41,10 @@ Drawable.prototype = {
         mat3.transpose(normalMatrix, normalMatrix);
 
         // TODO: change uniform name
-        this.shaderProgram.setUniformMatrix4("pMatrixUniform", projectionMatrix);
-        this.shaderProgram.setUniformMatrix4("vMatrixUniform", viewMatrix);
-        this.shaderProgram.setUniformMatrix4("mMatrixUniform", this.modelMatrix);
-        this.shaderProgram.setUniformMatrix3("nMatrixUniform", normalMatrix);
+        this.shaderProgram.setUniformMatrix4("projectionMatrixUniform", projectionMatrix);
+        this.shaderProgram.setUniformMatrix4("viewMatrixUniform", viewMatrix);
+        this.shaderProgram.setUniformMatrix4("modelMatrixUniform", this.modelMatrix);
+        this.shaderProgram.setUniformMatrix3("normalMatrixUniform", normalMatrix);
 
         this.GL.drawElements(this.GL.TRIANGLES, this.indexBuffer.numItems, this.GL.UNSIGNED_SHORT, 0);
     }

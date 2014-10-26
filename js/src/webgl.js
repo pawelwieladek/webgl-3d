@@ -27,14 +27,14 @@ function WebGL(canvas) {
 
         shaderProgram.run();
 
-        shaderProgram.addAttribute("vertexPositionAttribute", "aVertexPosition");
-        shaderProgram.addAttribute("vertexNormalAttribute", "aVertexNormal");
-        shaderProgram.addAttribute("vertexColorAttribute", "aVertexColor");
+        shaderProgram.addAttribute("vertexPositionAttribute", "vertexPosition");
+        shaderProgram.addAttribute("vertexNormalAttribute", "vertexNormal");
+        shaderProgram.addAttribute("vertexColorAttribute", "vertexColor");
 
-        shaderProgram.addUniform("pMatrixUniform", "uPMatrix");
-        shaderProgram.addUniform("mMatrixUniform", "uMMatrix");
-        shaderProgram.addUniform("vMatrixUniform", "uVMatrix");
-        shaderProgram.addUniform("nMatrixUniform", "uNMatrix");
+        shaderProgram.addUniform("projectionMatrixUniform", "projectionMatrix");
+        shaderProgram.addUniform("modelMatrixUniform", "modelMatrix");
+        shaderProgram.addUniform("viewMatrixUniform", "viewMatrix");
+        shaderProgram.addUniform("normalMatrixUniform", "normalMatrix");
     }
 
     initGL(canvas);

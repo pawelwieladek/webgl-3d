@@ -4,7 +4,7 @@ function Camera() {
     this.direction = vec3.fromValues(0.0, 0.0, 1.0);
     this.up = vec3.fromValues(0.0, 1.0, 0.0);
     this.step = 0.05;
-    this.angle = 5 * (Math.PI / 180);
+    this.angle = Math.PI / 180;
 }
 
 Camera.prototype = {

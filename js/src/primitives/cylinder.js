@@ -30,11 +30,12 @@ function Cylinder() {
     }
 
     var index = 0;
+    var angleStep = 10;
     function drawBasis(y, normal, color) {
-        for (var i = 0; i < 360; i++) {
+        for (var i = 0; i < 360; i += angleStep) {
             vertices.elements = vertices.elements.concat([0.0, y, 0.0]);
             vertices.elements = vertices.elements.concat([cos(i), y, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i + 1), y, sin(i + 1)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), y, sin(i + angleStep)]);
             vertices.numItems += 3;
 
             normals.elements = normals.elements.concat([0.0, normal, 0.0]);
@@ -57,17 +58,17 @@ function Cylinder() {
     function drawSide(height, normal, color) {
         for (var i = 0; i < 360; i++) {
             vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i + 1), 0, sin(i + 1)]);
-            vertices.elements = vertices.elements.concat([cos(i + 1), height, sin(i + 1)]);
-            vertices.elements = vertices.elements.concat([cos(i + 1), height, sin(i + 1)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), 0, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
             vertices.elements = vertices.elements.concat([cos(i), height, sin(i)]);
             vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
             vertices.numItems += 6;
 
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
-            normals.elements = normals.elements.concat([normal * cos(i + 1), 0, normal * sin(i + 1)]);
-            normals.elements = normals.elements.concat([normal * cos(i + 1), 0, normal * sin(i + 1)]);
-            normals.elements = normals.elements.concat([normal * cos(i + 1), 0, normal * sin(i + 1)]);
+            normals.elements = normals.elements.concat([normal * cos(i + angleStep), 0, normal * sin(i + angleStep)]);
+            normals.elements = normals.elements.concat([normal * cos(i + angleStep), 0, normal * sin(i + angleStep)]);
+            normals.elements = normals.elements.concat([normal * cos(i + angleStep), 0, normal * sin(i + angleStep)]);
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
             normals.numItems += 6;
