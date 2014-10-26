@@ -40,7 +40,6 @@ Drawable.prototype = {
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
-        // TODO: change uniform name
         this.shaderProgram.setUniformMatrix4("projectionMatrixUniform", projectionMatrix);
         this.shaderProgram.setUniformMatrix4("viewMatrixUniform", viewMatrix);
         this.shaderProgram.setUniformMatrix4("modelMatrixUniform", this.modelMatrix);
