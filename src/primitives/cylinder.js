@@ -1,5 +1,5 @@
-function Cylinder() {
-    Primitive.call(this);
+function Cylinder(color) {
+    Primitive.call(this, color);
     var vertices = {
         elements: [],
         itemSize: 3,
@@ -31,7 +31,7 @@ function Cylinder() {
 
     var index = 0;
     var angleStep = 10;
-    function drawBasis(y, normal, color) {
+    function drawBasis(y, normal) {
         for (var i = 0; i < 360; i += angleStep) {
             vertices.elements = vertices.elements.concat([0.0, y, 0.0]);
             vertices.elements = vertices.elements.concat([cos(i), y, sin(i)]);
@@ -43,11 +43,6 @@ function Cylinder() {
             normals.elements = normals.elements.concat([0.0, normal, 0.0]);
             normals.numItems += 3;
 
-            for (var j = 0; j < 3; j++) {
-                colors.elements = colors.elements.concat(color);
-            }
-            colors.numItems += 3;
-
             for (var k = 0; k < 3; k++) {
                 indices.elements.push(index++);
             }
@@ -55,7 +50,7 @@ function Cylinder() {
         }
     }
 
-    function drawSide(height, normal, color) {
+    function drawSide(height, normal) {
         for (var i = 0; i < 360; i++) {
             vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
             vertices.elements = vertices.elements.concat([cos(i + angleStep), 0, sin(i + angleStep)]);
@@ -73,32 +68,30 @@ function Cylinder() {
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
             normals.numItems += 6;
 
-            for (var j = 0; j < 6; j++) {
-                colors.elements = colors.elements.concat(color);
-            }
-            colors.numItems += 6;
-
             for (var k = 0; k < 6; k++) {
                 indices.elements.push(index++);
             }
             indices.numItems += 6;
         }
     }
-
-    var color1 = [1.0, 1.0, 0.0, 1.0];
-    var color2 = [0.0, 1.0, 1.0, 1.0];
     var lower = 0.0;
     var upper = 1.0;
     var normal = 1.0;
 
-    drawBasis(lower, -normal, color2);
-    drawBasis(upper, normal, color2);
-    drawSide(upper, normal, color1);
+    drawBasis(lower, -normal);
+    drawBasis(upper, normal);
+    drawSide(upper, normal);
 
     this.vertices = vertices;
     this.normals = normals;
     this.colors = colors;
     this.indices = indices;
+
+
+    if (typeof color === "undefined" || color === null) {
+        color = Colors.Black;
+    }
+    this.fill(color);
 }
 
 Cylinder.prototype = Object.create(Primitive.prototype);

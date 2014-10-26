@@ -4,6 +4,7 @@ var gulp = require('gulp');
 // include plug-ins
 var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
+var watch = require('gulp-watch');
 
 // Tasks
 gulp.task('jshint', function() {
@@ -20,4 +21,11 @@ gulp.task('concat', function() {
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('default', ['jshint', 'concat'], function() { });
+// Tasks
+gulp.task('watch', function() {
+    watch(['./src/*.js', './src/primitives/*.js'], function (files, cb) {
+        gulp.start('concat', cb);
+    });
+});
+
+gulp.task('default', ['jshint', 'concat', 'watch'], function() { });

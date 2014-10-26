@@ -16,7 +16,7 @@ Scene.prototype = {
 
         var drawableFactory = new DrawableFactory(this.GL, this.shaderProgram);
 
-        var rectangle = drawableFactory.createDrawable(new Rectangle());
+        var rectangle = drawableFactory.createDrawable(new Rectangle(Colors.Red));
 
         mat4.identity(rectangle.modelMatrix);
         mat4.translate(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));

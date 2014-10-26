@@ -12,6 +12,7 @@ DrawableFactory.prototype = {
 function Drawable(GL, shaderProgram, primitive) {
     this.GL = GL;
     this.shaderProgram = shaderProgram;
+    this.primitive = primitive;
     this.positionBuffer = new VertexBufferObject(GL);
     this.colorBuffer = new VertexBufferObject(GL);
     this.normalBuffer = new VertexBufferObject(GL);

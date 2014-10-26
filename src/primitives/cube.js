@@ -1,5 +1,5 @@
-function Cube() {
-    Primitive.call(this);
+function Cube(color) {
+    Primitive.call(this, color);
     this.vertices = {
         elements: [
             // Front face
@@ -82,41 +82,7 @@ function Cube() {
         itemSize: 3,
         numItems: 24
     };
-    this.colors = {
-        elements: [
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
 
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0
-        ],
-        itemSize: 4,
-        numItems: 24
-    };
     this.indices = {
         elements: [
             0, 1, 2,      0, 2, 3,    // Front face
@@ -129,6 +95,11 @@ function Cube() {
         itemSize: 1,
         numItems: 36
     };
+
+    if (typeof color === "undefined" || color === null) {
+        color = Colors.Black;
+    }
+    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);

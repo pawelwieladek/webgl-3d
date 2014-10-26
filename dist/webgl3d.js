@@ -4440,6 +4440,16 @@ Camera.prototype = {
         vec3.transformMat4(this.up, this.up, rotateMatrix);
     }
 };
+var Colors = {
+    Red: [1.0, 0.0, 0.0, 1.0],
+    Green: [0.0, 1.0, 0.0, 1.0],
+    Blue: [0.0, 0.0, 1.0, 1.0],
+    Cyan: [0.0, 1.0, 1.0, 1.0],
+    Magenta: [1.0, 0.0, 1.0, 1.0],
+    Yellow: [1.0, 1.0, 0.0, 1.0],
+    Black: [0.0, 0.0, 0.0, 1.0],
+    White: [1.0, 1.0, 1.0, 1.0]
+};
 function DrawableFactory(GL, shaderProgram) {
     this.GL = GL;
     this.shaderProgram = shaderProgram;
@@ -4454,6 +4464,7 @@ DrawableFactory.prototype = {
 function Drawable(GL, shaderProgram, primitive) {
     this.GL = GL;
     this.shaderProgram = shaderProgram;
+    this.primitive = primitive;
     this.positionBuffer = new VertexBufferObject(GL);
     this.colorBuffer = new VertexBufferObject(GL);
     this.normalBuffer = new VertexBufferObject(GL);
@@ -4559,6 +4570,20 @@ function Primitive() {
     this.normals = null;
     this.colors = null;
     this.indices = null;
+
+    this.fill = function(color) {
+        var colors = {
+            elements: [],
+            itemSize: 4,
+            numItems: this.vertices.numItems
+        };
+
+        for (var i = 0; i < colors.numItems; i++) {
+            colors.elements = colors.elements.concat(color);
+        }
+
+        this.colors = colors;
+    };
 }
 
 Primitive.prototype = {
@@ -4582,7 +4607,7 @@ Scene.prototype = {
 
         var drawableFactory = new DrawableFactory(this.GL, this.shaderProgram);
 
-        var rectangle = drawableFactory.createDrawable(new Rectangle());
+        var rectangle = drawableFactory.createDrawable(new Rectangle(Colors.Red));
 
         mat4.identity(rectangle.modelMatrix);
         mat4.translate(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
@@ -4740,8 +4765,8 @@ WebGL.prototype = {
         return this.shaderProgram;
     }
 };
-function Cube() {
-    Primitive.call(this);
+function Cube(color) {
+    Primitive.call(this, color);
     this.vertices = {
         elements: [
             // Front face
@@ -4824,41 +4849,7 @@ function Cube() {
         itemSize: 3,
         numItems: 24
     };
-    this.colors = {
-        elements: [
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
 
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0
-        ],
-        itemSize: 4,
-        numItems: 24
-    };
     this.indices = {
         elements: [
             0, 1, 2,      0, 2, 3,    // Front face
@@ -4871,11 +4862,16 @@ function Cube() {
         itemSize: 1,
         numItems: 36
     };
+
+    if (typeof color === "undefined" || color === null) {
+        color = Colors.Black;
+    }
+    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);
-function Cylinder() {
-    Primitive.call(this);
+function Cylinder(color) {
+    Primitive.call(this, color);
     var vertices = {
         elements: [],
         itemSize: 3,
@@ -4907,7 +4903,7 @@ function Cylinder() {
 
     var index = 0;
     var angleStep = 10;
-    function drawBasis(y, normal, color) {
+    function drawBasis(y, normal) {
         for (var i = 0; i < 360; i += angleStep) {
             vertices.elements = vertices.elements.concat([0.0, y, 0.0]);
             vertices.elements = vertices.elements.concat([cos(i), y, sin(i)]);
@@ -4919,11 +4915,6 @@ function Cylinder() {
             normals.elements = normals.elements.concat([0.0, normal, 0.0]);
             normals.numItems += 3;
 
-            for (var j = 0; j < 3; j++) {
-                colors.elements = colors.elements.concat(color);
-            }
-            colors.numItems += 3;
-
             for (var k = 0; k < 3; k++) {
                 indices.elements.push(index++);
             }
@@ -4931,7 +4922,7 @@ function Cylinder() {
         }
     }
 
-    function drawSide(height, normal, color) {
+    function drawSide(height, normal) {
         for (var i = 0; i < 360; i++) {
             vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
             vertices.elements = vertices.elements.concat([cos(i + angleStep), 0, sin(i + angleStep)]);
@@ -4949,37 +4940,35 @@ function Cylinder() {
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
             normals.numItems += 6;
 
-            for (var j = 0; j < 6; j++) {
-                colors.elements = colors.elements.concat(color);
-            }
-            colors.numItems += 6;
-
             for (var k = 0; k < 6; k++) {
                 indices.elements.push(index++);
             }
             indices.numItems += 6;
         }
     }
-
-    var color1 = [1.0, 1.0, 0.0, 1.0];
-    var color2 = [0.0, 1.0, 1.0, 1.0];
     var lower = 0.0;
     var upper = 1.0;
     var normal = 1.0;
 
-    drawBasis(lower, -normal, color2);
-    drawBasis(upper, normal, color2);
-    drawSide(upper, normal, color1);
+    drawBasis(lower, -normal);
+    drawBasis(upper, normal);
+    drawSide(upper, normal);
 
     this.vertices = vertices;
     this.normals = normals;
     this.colors = colors;
     this.indices = indices;
+
+
+    if (typeof color === "undefined" || color === null) {
+        color = Colors.Black;
+    }
+    this.fill(color);
 }
 
 Cylinder.prototype = Object.create(Primitive.prototype);
-function Rectangle() {
-    Primitive.call(this);
+function Rectangle(color) {
+    Primitive.call(this, color);
     this.vertices = {
         elements: [
             -1.0, -1.0, 0.0,
@@ -4992,6 +4981,7 @@ function Rectangle() {
         itemSize: 3,
         numItems: 6
     };
+
     this.normals = {
         elements: [
             // Front face
@@ -5005,18 +4995,7 @@ function Rectangle() {
         itemSize: 3,
         numItems: 6
     };
-    this.colors = {
-        elements: [
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0
-        ],
-        itemSize: 4,
-        numItems: 6
-    };
+
     this.indices = {
         elements: [
             0, 1, 2, 3, 4, 5
@@ -5024,6 +5003,11 @@ function Rectangle() {
         itemSize: 1,
         numItems: 6
     };
+
+    if (typeof color === "undefined" || color === null) {
+        color = Colors.Black;
+    }
+    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);
