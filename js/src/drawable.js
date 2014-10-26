@@ -20,10 +20,10 @@ function Drawable(GL, shaderProgram, primitive) {
 
     // init
     mat4.identity(this.modelMatrix);
-    this.positionBuffer.init(primitive.getVertices().elements, primitive.getVertices().itemSize, primitive.getVertices().numItems);
-    this.colorBuffer.init(primitive.getColors().elements, primitive.getColors().itemSize, primitive.getColors().numItems);
-    this.normalBuffer.init(primitive.getNormals().elements, primitive.getNormals().itemSize, primitive.getNormals().numItems);
-    this.indexBuffer.init(primitive.getIndices().elements, primitive.getIndices().itemSize, primitive.getIndices().numItems);
+    this.positionBuffer.init(primitive.vertices.elements, primitive.vertices.itemSize, primitive.vertices.numItems);
+    this.colorBuffer.init(primitive.colors.elements, primitive.colors.itemSize, primitive.colors.numItems);
+    this.normalBuffer.init(primitive.normals.elements, primitive.normals.itemSize, primitive.normals.numItems);
+    this.indexBuffer.init(primitive.indices.elements, primitive.indices.itemSize, primitive.indices.numItems);
 }
 
 Drawable.prototype = {

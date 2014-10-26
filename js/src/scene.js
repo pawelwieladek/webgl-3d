@@ -16,12 +16,12 @@ Scene.prototype = {
 
         var drawableFactory = new DrawableFactory(this.GL, this.shaderProgram);
 
-        var drawableCylinder = drawableFactory.createDrawable(new Cylinder());
+        var rectangle = drawableFactory.createDrawable(new Rectangle());
 
-        mat4.identity(drawableCylinder.modelMatrix);
-        mat4.translate(drawableCylinder.modelMatrix, drawableCylinder.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
-        mat4.scale(drawableCylinder.modelMatrix, drawableCylinder.modelMatrix, vec3.fromValues(6.0, 1.0, 6.0));
+        mat4.identity(rectangle.modelMatrix);
+        mat4.translate(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
+        mat4.scale(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(6.0, 1.0, 6.0));
 
-        drawableCylinder.draw(this.projectionMatrix, this.camera.getViewMatrix());
+        rectangle.draw(this.projectionMatrix, this.camera.getViewMatrix());
     }
 };
