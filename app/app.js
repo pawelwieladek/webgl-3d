@@ -1,5 +1,6 @@
 function main() {
     var camera = new Camera();
+
     var keyboard = new Keyboard();
     keyboard.bind(Keys.UpArrow, camera, camera.moveUp);
     keyboard.bind(Keys.DownArrow, camera, camera.moveDown);
@@ -18,6 +19,14 @@ function main() {
     var webGL = new WebGL(canvas);
 
     var scene = new Scene(webGL, camera);
+
+    var rectangle = scene.drawableFactory.createDrawable(new Cube(Colors.Red));
+
+    mat4.identity(rectangle.modelMatrix);
+    mat4.translate(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
+    mat4.scale(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(6.0, 1.0, 6.0));
+
+    scene.add(rectangle);
 
     var animation = new Animation(scene);
     animation.addHandler(keyboard);
