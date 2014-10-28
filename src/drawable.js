@@ -16,8 +16,8 @@ function Drawable(GL, shaderProgram, primitive, material) {
 
 Drawable.prototype = {
     draw: function(projectionMatrix, viewMatrix) {
-        this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPositionAttribute"));
-        this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormalAttribute"));
+        this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPosition"));
+        this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormal"));
         this.indexBuffer.bind();
 
         var normalMatrix = mat3.create();
@@ -25,10 +25,10 @@ Drawable.prototype = {
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
-        this.shaderProgram.setUniformMatrix4("projectionMatrixUniform", projectionMatrix);
-        this.shaderProgram.setUniformMatrix4("viewMatrixUniform", viewMatrix);
-        this.shaderProgram.setUniformMatrix4("modelMatrixUniform", this.modelMatrix);
-        this.shaderProgram.setUniformMatrix3("normalMatrixUniform", normalMatrix);
+        this.shaderProgram.setUniformMatrix4("projectionMatrix", projectionMatrix);
+        this.shaderProgram.setUniformMatrix4("viewMatrix", viewMatrix);
+        this.shaderProgram.setUniformMatrix4("modelMatrix", this.modelMatrix);
+        this.shaderProgram.setUniformMatrix3("normalMatrix", normalMatrix);
 
         this.material.apply();
 

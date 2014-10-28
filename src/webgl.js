@@ -27,24 +27,24 @@ function WebGL(canvas) {
 
         shaderProgram.run();
 
-        shaderProgram.addAttribute("vertexPositionAttribute", "vertexPosition");
-        shaderProgram.addAttribute("vertexNormalAttribute", "vertexNormal");
+        shaderProgram.addAttribute("vertexPosition");
+        shaderProgram.addAttribute("vertexNormal");
 
-        shaderProgram.addUniform("projectionMatrixUniform", "projectionMatrix");
-        shaderProgram.addUniform("modelMatrixUniform", "modelMatrix");
-        shaderProgram.addUniform("viewMatrixUniform", "viewMatrix");
-        shaderProgram.addUniform("normalMatrixUniform", "normalMatrix");
+        shaderProgram.addUniform("projectionMatrix");
+        shaderProgram.addUniform("modelMatrix");
+        shaderProgram.addUniform("viewMatrix");
+        shaderProgram.addUniform("normalMatrix");
 
-        shaderProgram.addUniform("material.color", "material.color");
+        shaderProgram.addUniform("material.color");
 
-        shaderProgram.addUniform("directionalLight.direction", "directionalLight.direction");
-        shaderProgram.addUniform("directionalLight.diffuseColor", "directionalLight.diffuseColor");
+        shaderProgram.addUniform("directionalLight.direction");
+        shaderProgram.addUniform("directionalLight.diffuseColor");
 
-        shaderProgram.addUniform("pointLight.position", "pointLight.position");
-        shaderProgram.addUniform("pointLight.diffuseColor", "pointLight.diffuseColor");
-        shaderProgram.addUniform("pointLight.constantAttenuation", "pointLight.constantAttenuation");
-        shaderProgram.addUniform("pointLight.linearAttenuation", "pointLight.linearAttenuation");
-        shaderProgram.addUniform("pointLight.exponentAttenuation", "pointLight.exponentAttenuation");
+        shaderProgram.addUniform("pointLight.position");
+        shaderProgram.addUniform("pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.constantAttenuation");
+        shaderProgram.addUniform("pointLight.linearAttenuation");
+        shaderProgram.addUniform("pointLight.exponentAttenuation");
     }
 
     initGL(canvas);

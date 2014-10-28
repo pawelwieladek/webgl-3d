@@ -54,9 +54,9 @@ ShaderProgram.prototype = {
         }
         GL.useProgram(shaderProgram);
     },
-    addAttribute: function(key, name) {
-        this.attributes[key] = this.GL.getAttribLocation(this.shaderProgram, name);
-        this.GL.enableVertexAttribArray(this.attributes[key]);
+    addAttribute: function(name) {
+        this.attributes[name] = this.GL.getAttribLocation(this.shaderProgram, name);
+        this.GL.enableVertexAttribArray(this.attributes[name]);
     },
     getAttribute: function(key) {
         if(this.attributes.hasOwnProperty(key)) {
@@ -65,8 +65,8 @@ ShaderProgram.prototype = {
             throw new Error("Attribute doesn't exist.");
         }
     },
-    addUniform: function(key, name) {
-        this.uniforms[key] = this.GL.getUniformLocation(this.shaderProgram, name);
+    addUniform: function(name) {
+        this.uniforms[name] = this.GL.getUniformLocation(this.shaderProgram, name);
     },
     setUniformMatrix4: function(key, matrix) {
         this.GL.uniformMatrix4fv(this.uniforms[key], false, matrix);

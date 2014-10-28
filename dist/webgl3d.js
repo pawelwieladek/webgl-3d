@@ -4453,8 +4453,8 @@ function Drawable(GL, shaderProgram, primitive, material) {
 
 Drawable.prototype = {
     draw: function(projectionMatrix, viewMatrix) {
-        this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPositionAttribute"));
-        this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormalAttribute"));
+        this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPosition"));
+        this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormal"));
         this.indexBuffer.bind();
 
         var normalMatrix = mat3.create();
@@ -4462,10 +4462,10 @@ Drawable.prototype = {
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
-        this.shaderProgram.setUniformMatrix4("projectionMatrixUniform", projectionMatrix);
-        this.shaderProgram.setUniformMatrix4("viewMatrixUniform", viewMatrix);
-        this.shaderProgram.setUniformMatrix4("modelMatrixUniform", this.modelMatrix);
-        this.shaderProgram.setUniformMatrix3("normalMatrixUniform", normalMatrix);
+        this.shaderProgram.setUniformMatrix4("projectionMatrix", projectionMatrix);
+        this.shaderProgram.setUniformMatrix4("viewMatrix", viewMatrix);
+        this.shaderProgram.setUniformMatrix4("modelMatrix", this.modelMatrix);
+        this.shaderProgram.setUniformMatrix3("normalMatrix", normalMatrix);
 
         this.material.apply();
 
@@ -4699,9 +4699,9 @@ ShaderProgram.prototype = {
         }
         GL.useProgram(shaderProgram);
     },
-    addAttribute: function(key, name) {
-        this.attributes[key] = this.GL.getAttribLocation(this.shaderProgram, name);
-        this.GL.enableVertexAttribArray(this.attributes[key]);
+    addAttribute: function(name) {
+        this.attributes[name] = this.GL.getAttribLocation(this.shaderProgram, name);
+        this.GL.enableVertexAttribArray(this.attributes[name]);
     },
     getAttribute: function(key) {
         if(this.attributes.hasOwnProperty(key)) {
@@ -4710,8 +4710,8 @@ ShaderProgram.prototype = {
             throw new Error("Attribute doesn't exist.");
         }
     },
-    addUniform: function(key, name) {
-        this.uniforms[key] = this.GL.getUniformLocation(this.shaderProgram, name);
+    addUniform: function(name) {
+        this.uniforms[name] = this.GL.getUniformLocation(this.shaderProgram, name);
     },
     setUniformMatrix4: function(key, matrix) {
         this.GL.uniformMatrix4fv(this.uniforms[key], false, matrix);
@@ -4758,24 +4758,24 @@ function WebGL(canvas) {
 
         shaderProgram.run();
 
-        shaderProgram.addAttribute("vertexPositionAttribute", "vertexPosition");
-        shaderProgram.addAttribute("vertexNormalAttribute", "vertexNormal");
+        shaderProgram.addAttribute("vertexPosition");
+        shaderProgram.addAttribute("vertexNormal");
 
-        shaderProgram.addUniform("projectionMatrixUniform", "projectionMatrix");
-        shaderProgram.addUniform("modelMatrixUniform", "modelMatrix");
-        shaderProgram.addUniform("viewMatrixUniform", "viewMatrix");
-        shaderProgram.addUniform("normalMatrixUniform", "normalMatrix");
+        shaderProgram.addUniform("projectionMatrix");
+        shaderProgram.addUniform("modelMatrix");
+        shaderProgram.addUniform("viewMatrix");
+        shaderProgram.addUniform("normalMatrix");
 
-        shaderProgram.addUniform("material.color", "material.color");
+        shaderProgram.addUniform("material.color");
 
-        shaderProgram.addUniform("directionalLight.direction", "directionalLight.direction");
-        shaderProgram.addUniform("directionalLight.diffuseColor", "directionalLight.diffuseColor");
+        shaderProgram.addUniform("directionalLight.direction");
+        shaderProgram.addUniform("directionalLight.diffuseColor");
 
-        shaderProgram.addUniform("pointLight.position", "pointLight.position");
-        shaderProgram.addUniform("pointLight.diffuseColor", "pointLight.diffuseColor");
-        shaderProgram.addUniform("pointLight.constantAttenuation", "pointLight.constantAttenuation");
-        shaderProgram.addUniform("pointLight.linearAttenuation", "pointLight.linearAttenuation");
-        shaderProgram.addUniform("pointLight.exponentAttenuation", "pointLight.exponentAttenuation");
+        shaderProgram.addUniform("pointLight.position");
+        shaderProgram.addUniform("pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.constantAttenuation");
+        shaderProgram.addUniform("pointLight.linearAttenuation");
+        shaderProgram.addUniform("pointLight.exponentAttenuation");
     }
 
     initGL(canvas);
