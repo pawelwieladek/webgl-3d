@@ -95,11 +95,6 @@ function Cube(color) {
         itemSize: 1,
         numItems: 36
     };
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);

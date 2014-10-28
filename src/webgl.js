@@ -29,12 +29,22 @@ function WebGL(canvas) {
 
         shaderProgram.addAttribute("vertexPositionAttribute", "vertexPosition");
         shaderProgram.addAttribute("vertexNormalAttribute", "vertexNormal");
-        shaderProgram.addAttribute("vertexColorAttribute", "vertexColor");
 
         shaderProgram.addUniform("projectionMatrixUniform", "projectionMatrix");
         shaderProgram.addUniform("modelMatrixUniform", "modelMatrix");
         shaderProgram.addUniform("viewMatrixUniform", "viewMatrix");
         shaderProgram.addUniform("normalMatrixUniform", "normalMatrix");
+
+        shaderProgram.addUniform("material.color", "material.color");
+
+        shaderProgram.addUniform("directionalLight.direction", "directionalLight.direction");
+        shaderProgram.addUniform("directionalLight.diffuseColor", "directionalLight.diffuseColor");
+
+        shaderProgram.addUniform("pointLight.position", "pointLight.position");
+        shaderProgram.addUniform("pointLight.diffuseColor", "pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.constantAttenuation", "pointLight.constantAttenuation");
+        shaderProgram.addUniform("pointLight.linearAttenuation", "pointLight.linearAttenuation");
+        shaderProgram.addUniform("pointLight.exponentAttenuation", "pointLight.exponentAttenuation");
     }
 
     initGL(canvas);

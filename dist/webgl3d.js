@@ -4426,40 +4426,27 @@ Camera.prototype = {
     }
 };
 var Colors = {
-    Red: [1.0, 0.0, 0.0, 1.0],
-    Green: [0.0, 1.0, 0.0, 1.0],
-    Blue: [0.0, 0.0, 1.0, 1.0],
-    Cyan: [0.0, 1.0, 1.0, 1.0],
-    Magenta: [1.0, 0.0, 1.0, 1.0],
-    Yellow: [1.0, 1.0, 0.0, 1.0],
-    Black: [0.0, 0.0, 0.0, 1.0],
-    White: [1.0, 1.0, 1.0, 1.0]
+    Red: vec3.fromValues(1.0, 0.0, 0.0),
+    Green: vec3.fromValues(0.0, 1.0, 0.0),
+    Blue: vec3.fromValues(0.0, 0.0, 1.0),
+    Cyan: vec3.fromValues(0.0, 1.0, 1.0),
+    Magenta: vec3.fromValues(1.0, 0.0, 1.0),
+    Yellow: vec3.fromValues(1.0, 1.0, 0.0),
+    Black: vec3.fromValues(0.0, 0.0, 0.0),
+    White: vec3.fromValues(1.0, 1.0, 1.0)
 };
-function DrawableFactory(GL, shaderProgram) {
-    this.GL = GL;
-    this.shaderProgram = shaderProgram;
-}
-
-DrawableFactory.prototype = {
-    createDrawable: function(primitive) {
-        return new Drawable(this.GL, this.shaderProgram, primitive);
-    }
-};
-
-function Drawable(GL, shaderProgram, primitive) {
+function Drawable(GL, shaderProgram, primitive, material) {
     this.GL = GL;
     this.shaderProgram = shaderProgram;
     this.primitive = primitive;
+    this.material = material;
     this.positionBuffer = new VertexBufferObject(GL);
-    this.colorBuffer = new VertexBufferObject(GL);
     this.normalBuffer = new VertexBufferObject(GL);
     this.indexBuffer = new IndexBufferObject(GL);
     this.modelMatrix = mat4.create();
 
-    // init
     mat4.identity(this.modelMatrix);
     this.positionBuffer.init(primitive.vertices.elements, primitive.vertices.itemSize, primitive.vertices.numItems);
-    this.colorBuffer.init(primitive.colors.elements, primitive.colors.itemSize, primitive.colors.numItems);
     this.normalBuffer.init(primitive.normals.elements, primitive.normals.itemSize, primitive.normals.numItems);
     this.indexBuffer.init(primitive.indices.elements, primitive.indices.itemSize, primitive.indices.numItems);
 }
@@ -4468,13 +4455,10 @@ Drawable.prototype = {
     draw: function(projectionMatrix, viewMatrix) {
         this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPositionAttribute"));
         this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormalAttribute"));
-        this.colorBuffer.bind(this.shaderProgram.getAttribute("vertexColorAttribute"));
         this.indexBuffer.bind();
 
         var normalMatrix = mat3.create();
-        var modelViewMatrix = mat4.create();
-        mat4.multiply(modelViewMatrix, this.modelMatrix, viewMatrix);
-        mat3.fromMat4(normalMatrix, modelViewMatrix);
+        mat3.fromMat4(normalMatrix, this.modelMatrix);
         mat3.invert(normalMatrix, normalMatrix);
         mat3.transpose(normalMatrix, normalMatrix);
 
@@ -4483,7 +4467,28 @@ Drawable.prototype = {
         this.shaderProgram.setUniformMatrix4("modelMatrixUniform", this.modelMatrix);
         this.shaderProgram.setUniformMatrix3("normalMatrixUniform", normalMatrix);
 
+        this.material.apply();
+
         this.GL.drawElements(this.GL.TRIANGLES, this.indexBuffer.numItems, this.GL.UNSIGNED_SHORT, 0);
+    }
+};
+function Factory(GL, shaderProgram) {
+    this.GL = GL;
+    this.shaderProgram = shaderProgram;
+}
+
+Factory.prototype = {
+    drawable: function(primitive, material) {
+        return new Drawable(this.GL, this.shaderProgram, primitive, material);
+    },
+    material: function(color) {
+        return new Material(this.shaderProgram, color);
+    },
+    directionalLight: function(direction, diffuse) {
+        return new DirectionalLight(this.shaderProgram, direction, diffuse);
+    },
+    pointLight: function(position, diffuse, constant, linear, exponent) {
+        return new PointLight(this.shaderProgram, position, diffuse, constant, linear, exponent);
     }
 };
 var Keys = {
@@ -4550,25 +4555,52 @@ Keyboard.prototype = {
         }
     }
 };
+function DirectionalLight(shaderProgram, direction, diffuseColor) {
+    this.shaderProgram = shaderProgram;
+    this.direction = direction;
+    this.diffuseColor = diffuseColor;
+}
+
+DirectionalLight.prototype = {
+    apply: function() {
+        this.shaderProgram.setUniformVector3("directionalLight.direction", this.direction);
+        this.shaderProgram.setUniformVector3("directionalLight.diffuseColor", this.diffuseColor);
+    }
+};
+
+function PointLight(shaderProgram, position, diffuseColor, constant, linear, exponent) {
+    this.shaderProgram = shaderProgram;
+    this.position = position;
+    this.diffuseColor = diffuseColor;
+    this.constantAttenuation = constant;
+    this.linearAttenuation = linear;
+    this.exponentAttenuation = exponent;
+}
+
+PointLight.prototype = {
+    apply: function() {
+        this.shaderProgram.setUniformVector3("pointLight.position", this.position);
+        this.shaderProgram.setUniformVector3("pointLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformFloat("pointLight.constantAttenuation", this.constantAttenuation);
+        this.shaderProgram.setUniformFloat("pointLight.linearAttenuation", this.linearAttenuation);
+        this.shaderProgram.setUniformFloat("pointLight.exponentAttenuation", this.exponentAttenuation);
+    }
+};
+function Material(shaderProgram, color) {
+    this.shaderProgram = shaderProgram;
+    this.color = color;
+}
+
+Material.prototype = {
+    apply: function() {
+        this.shaderProgram.setUniformVector3("material.color", this.color);
+    }
+};
+
 function Primitive() {
     this.vertices = null;
     this.normals = null;
-    this.colors = null;
     this.indices = null;
-
-    this.fill = function(color) {
-        var colors = {
-            elements: [],
-            itemSize: 4,
-            numItems: this.vertices.numItems
-        };
-
-        for (var i = 0; i < colors.numItems; i++) {
-            colors.elements = colors.elements.concat(color);
-        }
-
-        this.colors = colors;
-    };
 }
 
 Primitive.prototype = {
@@ -4578,22 +4610,32 @@ function Scene(webGL, camera) {
     this.GL = webGL.getGL();
     this.shaderProgram = webGL.getShaderProgram();
     this.projectionMatrix = mat4.create();
-    this.camera = camera;
-    this.drawableFactory = new DrawableFactory(this.GL, this.shaderProgram);
+    this.camera = new Camera();
+    this.factory = new Factory(this.GL, this.shaderProgram);
     this.drawables = [];
+    this.lights = [];
 }
 
 Scene.prototype = {
+    getCamera: function() {
+        return this.camera;
+    },
     clear: function() {
         this.GL.viewport(0, 0, this.GL.viewportWidth, this.GL.viewportHeight);
         this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);
         mat4.perspective(this.projectionMatrix, 45, this.GL.viewportWidth / this.GL.viewportHeight, 0.1, 100.0);
     },
-    add: function(drawable) {
+    addDrawable: function(drawable) {
         this.drawables.push(drawable);
+    },
+    addLight: function(light) {
+        this.lights.push(light);
     },
     draw: function() {
         this.clear();
+        this.lights.forEach(function(light) {
+            light.apply();
+        });
         var projectionMatrix = this.projectionMatrix;
         var viewMatrix = this.camera.getViewMatrix();
         this.drawables.forEach(function(drawable) {
@@ -4718,12 +4760,22 @@ function WebGL(canvas) {
 
         shaderProgram.addAttribute("vertexPositionAttribute", "vertexPosition");
         shaderProgram.addAttribute("vertexNormalAttribute", "vertexNormal");
-        shaderProgram.addAttribute("vertexColorAttribute", "vertexColor");
 
         shaderProgram.addUniform("projectionMatrixUniform", "projectionMatrix");
         shaderProgram.addUniform("modelMatrixUniform", "modelMatrix");
         shaderProgram.addUniform("viewMatrixUniform", "viewMatrix");
         shaderProgram.addUniform("normalMatrixUniform", "normalMatrix");
+
+        shaderProgram.addUniform("material.color", "material.color");
+
+        shaderProgram.addUniform("directionalLight.direction", "directionalLight.direction");
+        shaderProgram.addUniform("directionalLight.diffuseColor", "directionalLight.diffuseColor");
+
+        shaderProgram.addUniform("pointLight.position", "pointLight.position");
+        shaderProgram.addUniform("pointLight.diffuseColor", "pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.constantAttenuation", "pointLight.constantAttenuation");
+        shaderProgram.addUniform("pointLight.linearAttenuation", "pointLight.linearAttenuation");
+        shaderProgram.addUniform("pointLight.exponentAttenuation", "pointLight.exponentAttenuation");
     }
 
     initGL(canvas);
@@ -4847,11 +4899,6 @@ function Cube(color) {
         itemSize: 1,
         numItems: 36
     };
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);
@@ -4907,14 +4954,14 @@ function Cylinder(color) {
         }
     }
 
-    function drawSide(height, normal) {
+    function drawSide(lower, upper, normal) {
         for (var i = 0; i < 360; i++) {
-            vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), 0, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i), height, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i), lower, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), lower, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), upper, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), upper, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i), upper, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i), lower, sin(i)]);
             vertices.numItems += 6;
 
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
@@ -4931,24 +4978,18 @@ function Cylinder(color) {
             indices.numItems += 6;
         }
     }
-    var lower = 0.0;
+    var lower = -1.0;
     var upper = 1.0;
     var normal = 1.0;
 
     drawBasis(lower, -normal);
     drawBasis(upper, normal);
-    drawSide(upper, normal);
+    drawSide(lower, upper, normal);
 
     this.vertices = vertices;
     this.normals = normals;
     this.colors = colors;
     this.indices = indices;
-
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cylinder.prototype = Object.create(Primitive.prototype);
@@ -4988,11 +5029,6 @@ function Rectangle(color) {
         itemSize: 1,
         numItems: 6
     };
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);

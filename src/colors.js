@@ -1,10 +1,10 @@
 var Colors = {
-    Red: [1.0, 0.0, 0.0, 1.0],
-    Green: [0.0, 1.0, 0.0, 1.0],
-    Blue: [0.0, 0.0, 1.0, 1.0],
-    Cyan: [0.0, 1.0, 1.0, 1.0],
-    Magenta: [1.0, 0.0, 1.0, 1.0],
-    Yellow: [1.0, 1.0, 0.0, 1.0],
-    Black: [0.0, 0.0, 0.0, 1.0],
-    White: [1.0, 1.0, 1.0, 1.0]
+    Red: vec3.fromValues(1.0, 0.0, 0.0),
+    Green: vec3.fromValues(0.0, 1.0, 0.0),
+    Blue: vec3.fromValues(0.0, 0.0, 1.0),
+    Cyan: vec3.fromValues(0.0, 1.0, 1.0),
+    Magenta: vec3.fromValues(1.0, 0.0, 1.0),
+    Yellow: vec3.fromValues(1.0, 1.0, 0.0),
+    Black: vec3.fromValues(0.0, 0.0, 0.0),
+    White: vec3.fromValues(1.0, 1.0, 1.0)
 };

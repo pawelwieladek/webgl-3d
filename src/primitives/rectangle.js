@@ -34,11 +34,6 @@ function Rectangle(color) {
         itemSize: 1,
         numItems: 6
     };
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cube.prototype = Object.create(Primitive.prototype);

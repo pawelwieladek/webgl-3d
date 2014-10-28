@@ -50,14 +50,14 @@ function Cylinder(color) {
         }
     }
 
-    function drawSide(height, normal) {
+    function drawSide(lower, upper, normal) {
         for (var i = 0; i < 360; i++) {
-            vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), 0, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i + angleStep), height, sin(i + angleStep)]);
-            vertices.elements = vertices.elements.concat([cos(i), height, sin(i)]);
-            vertices.elements = vertices.elements.concat([cos(i), 0, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i), lower, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), lower, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), upper, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i + angleStep), upper, sin(i + angleStep)]);
+            vertices.elements = vertices.elements.concat([cos(i), upper, sin(i)]);
+            vertices.elements = vertices.elements.concat([cos(i), lower, sin(i)]);
             vertices.numItems += 6;
 
             normals.elements = normals.elements.concat([normal * cos(i), 0, normal * sin(i)]);
@@ -74,24 +74,18 @@ function Cylinder(color) {
             indices.numItems += 6;
         }
     }
-    var lower = 0.0;
+    var lower = -1.0;
     var upper = 1.0;
     var normal = 1.0;
 
     drawBasis(lower, -normal);
     drawBasis(upper, normal);
-    drawSide(upper, normal);
+    drawSide(lower, upper, normal);
 
     this.vertices = vertices;
     this.normals = normals;
     this.colors = colors;
     this.indices = indices;
-
-
-    if (typeof color === "undefined" || color === null) {
-        color = Colors.Black;
-    }
-    this.fill(color);
 }
 
 Cylinder.prototype = Object.create(Primitive.prototype);
