@@ -14,16 +14,14 @@
             vec3 color;
         };
 
-        struct Light {
-            vec3 diffuse;
-        };
-
         struct DirectionalLight {
             vec3 diffuseColor;
+            vec3 ambientColor;
             vec3 direction;
         };
 
         struct PointLight {
+            vec3 ambientColor;
             vec3 diffuseColor;
             vec3 position;
             float constantAttenuation;
@@ -37,7 +35,7 @@
 
         vec4 getDirectionalLightColor(const DirectionalLight directionalLight, vec3 normal) {
             float diffuse = max(0.0, dot(normal, -directionalLight.direction));
-            return vec4(diffuse * directionalLight.diffuseColor, 1.0);
+            return vec4(directionalLight.ambientColor + diffuse * directionalLight.diffuseColor, 1.0);
         }
 
         vec4 getPointLightColor(const PointLight pointLight, vec3 position, vec3 normal) {
@@ -48,7 +46,7 @@
             float diffuse = max(0.0, dot(normal, -positionToLight));
             float attenuation = pointLight.constantAttenuation + pointLight.linearAttenuation * distance + pointLight.exponentAttenuation * distance * distance;
 
-            return vec4(pointLight.diffuseColor, 1.0) * diffuse / attenuation;
+            return vec4(pointLight.ambientColor + pointLight.diffuseColor * diffuse / attenuation, 1.0);
         }
 
         void main(void) {
@@ -89,16 +87,8 @@
     }
 </style>
 <body onload="main()">
-<canvas id="gl-canvas" width="600" height="400">
+<canvas id="gl-canvas" width="1000" height="600">
     Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
 </canvas>
-<div>
-    Position: <span id="position"></span><br>
-    Direction: <span id="direction"></span><br>
-    Up: <span id="up"></span><br>
-    View matrix: <span id="viewMatrix"></span><br>
-    Pitch angle: <span id="pitchAngle"></span><br>
-    Yaw angle: <span id="yawAngle"></span><br>
-</div>
 </body>
 </html>

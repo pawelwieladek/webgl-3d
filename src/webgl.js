@@ -6,6 +6,8 @@ function WebGL(canvas) {
     function initGL(canvas) {
         try {
             // Try to grab the standard context. If it fails, fallback to experimental.
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
             GL = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
             GL.viewportWidth = canvas.width;
             GL.viewportHeight = canvas.height;
@@ -39,9 +41,11 @@ function WebGL(canvas) {
 
         shaderProgram.addUniform("directionalLight.direction");
         shaderProgram.addUniform("directionalLight.diffuseColor");
+        shaderProgram.addUniform("directionalLight.ambientColor");
 
         shaderProgram.addUniform("pointLight.position");
         shaderProgram.addUniform("pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.ambientColor");
         shaderProgram.addUniform("pointLight.constantAttenuation");
         shaderProgram.addUniform("pointLight.linearAttenuation");
         shaderProgram.addUniform("pointLight.exponentAttenuation");

@@ -10,10 +10,10 @@ Factory.prototype = {
     material: function(color) {
         return new Material(this.shaderProgram, color);
     },
-    directionalLight: function(direction, diffuse) {
-        return new DirectionalLight(this.shaderProgram, direction, diffuse);
+    directionalLight: function(direction, ambientColor, diffuseColor) {
+        return new DirectionalLight(this.shaderProgram, direction, ambientColor, diffuseColor);
     },
-    pointLight: function(position, diffuse, constant, linear, exponent) {
-        return new PointLight(this.shaderProgram, position, diffuse, constant, linear, exponent);
+    pointLight: function(position, ambientColor, diffuseColor, constant, linear, exponent) {
+        return new PointLight(this.shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent);
     }
 };

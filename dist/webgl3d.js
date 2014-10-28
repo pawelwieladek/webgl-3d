@@ -4455,11 +4455,11 @@ Factory.prototype = {
     material: function(color) {
         return new Material(this.shaderProgram, color);
     },
-    directionalLight: function(direction, diffuse) {
-        return new DirectionalLight(this.shaderProgram, direction, diffuse);
+    directionalLight: function(direction, ambientColor, diffuseColor) {
+        return new DirectionalLight(this.shaderProgram, direction, ambientColor, diffuseColor);
     },
-    pointLight: function(position, diffuse, constant, linear, exponent) {
-        return new PointLight(this.shaderProgram, position, diffuse, constant, linear, exponent);
+    pointLight: function(position, ambientColor, diffuseColor, constant, linear, exponent) {
+        return new PointLight(this.shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent);
     }
 };
 var Keys = {
@@ -4526,9 +4526,10 @@ Keyboard.prototype = {
         }
     }
 };
-function DirectionalLight(shaderProgram, direction, diffuseColor) {
+function DirectionalLight(shaderProgram, direction, ambientColor, diffuseColor) {
     this.shaderProgram = shaderProgram;
     this.direction = direction;
+    this.ambientColor = ambientColor;
     this.diffuseColor = diffuseColor;
 }
 
@@ -4536,12 +4537,14 @@ DirectionalLight.prototype = {
     apply: function() {
         this.shaderProgram.setUniformVector3("directionalLight.direction", this.direction);
         this.shaderProgram.setUniformVector3("directionalLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("directionalLight.ambientColor", this.ambientColor);
     }
 };
 
-function PointLight(shaderProgram, position, diffuseColor, constant, linear, exponent) {
+function PointLight(shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent) {
     this.shaderProgram = shaderProgram;
     this.position = position;
+    this.ambientColor = ambientColor;
     this.diffuseColor = diffuseColor;
     this.constantAttenuation = constant;
     this.linearAttenuation = linear;
@@ -4552,6 +4555,7 @@ PointLight.prototype = {
     apply: function() {
         this.shaderProgram.setUniformVector3("pointLight.position", this.position);
         this.shaderProgram.setUniformVector3("pointLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("pointLight.ambientColor", this.ambientColor);
         this.shaderProgram.setUniformFloat("pointLight.constantAttenuation", this.constantAttenuation);
         this.shaderProgram.setUniformFloat("pointLight.linearAttenuation", this.linearAttenuation);
         this.shaderProgram.setUniformFloat("pointLight.exponentAttenuation", this.exponentAttenuation);
@@ -4733,6 +4737,8 @@ function WebGL(canvas) {
     function initGL(canvas) {
         try {
             // Try to grab the standard context. If it fails, fallback to experimental.
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
             GL = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
             GL.viewportWidth = canvas.width;
             GL.viewportHeight = canvas.height;
@@ -4766,9 +4772,11 @@ function WebGL(canvas) {
 
         shaderProgram.addUniform("directionalLight.direction");
         shaderProgram.addUniform("directionalLight.diffuseColor");
+        shaderProgram.addUniform("directionalLight.ambientColor");
 
         shaderProgram.addUniform("pointLight.position");
         shaderProgram.addUniform("pointLight.diffuseColor");
+        shaderProgram.addUniform("pointLight.ambientColor");
         shaderProgram.addUniform("pointLight.constantAttenuation");
         shaderProgram.addUniform("pointLight.linearAttenuation");
         shaderProgram.addUniform("pointLight.exponentAttenuation");
