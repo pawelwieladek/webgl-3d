@@ -11,6 +11,9 @@ function Camera() {
 }
 
 Camera.prototype = {
+    setPosition: function(position) {
+        this.position = position;
+    },
     getViewMatrix: function() {
         var rotationMatrix = mat4.create();
         var direction = vec3.fromValues(0.0, 0.0, -1.0);

@@ -4342,6 +4342,9 @@ function Camera() {
 }
 
 Camera.prototype = {
+    setPosition: function(position) {
+        this.position = position;
+    },
     getViewMatrix: function() {
         var rotationMatrix = mat4.create();
         var direction = vec3.fromValues(0.0, 0.0, -1.0);
@@ -4423,6 +4426,21 @@ function Drawable(GL, shaderProgram, primitive, material) {
 }
 
 Drawable.prototype = {
+    translate: function(vector) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, vector);
+    },
+    scale: function(scale) {
+        mat4.scale(this.modelMatrix, this.modelMatrix, scale);
+    },
+    rotateX: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
+    rotateY: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
+    rotateZ: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
     draw: function(projectionMatrix, viewMatrix) {
         this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPosition"));
         this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormal"));
@@ -4789,7 +4807,7 @@ function WebGL(canvas) {
     this.shaderProgram = shaderProgram;
 
     if (this.GL) {
-        this.GL.clearColor(0.5, 0.5, 0.5, 1.0);                                 // Set clear color to black, fully opaque
+        this.GL.clearColor(1.0, 1.0, 1.0, 1.0);                                 // Set clear color to black, fully opaque
         this.GL.enable(this.GL.DEPTH_TEST);                                     // Enable depth testing
         this.GL.depthFunc(this.GL.LEQUAL);                                      // Near things obscure far things
         this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);     // Clear the color as well as the depth buffer.

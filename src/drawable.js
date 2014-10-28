@@ -15,6 +15,21 @@ function Drawable(GL, shaderProgram, primitive, material) {
 }
 
 Drawable.prototype = {
+    translate: function(vector) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, vector);
+    },
+    scale: function(scale) {
+        mat4.scale(this.modelMatrix, this.modelMatrix, scale);
+    },
+    rotateX: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
+    rotateY: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
+    rotateZ: function(angle) {
+        mat4.translate(this.modelMatrix, this.modelMatrix, angle);
+    },
     draw: function(projectionMatrix, viewMatrix) {
         this.positionBuffer.bind(this.shaderProgram.getAttribute("vertexPosition"));
         this.normalBuffer.bind(this.shaderProgram.getAttribute("vertexNormal"));

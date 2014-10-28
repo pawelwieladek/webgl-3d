@@ -58,7 +58,7 @@ function WebGL(canvas) {
     this.shaderProgram = shaderProgram;
 
     if (this.GL) {
-        this.GL.clearColor(0.5, 0.5, 0.5, 1.0);                                 // Set clear color to black, fully opaque
+        this.GL.clearColor(1.0, 1.0, 1.0, 1.0);                                 // Set clear color to black, fully opaque
         this.GL.enable(this.GL.DEPTH_TEST);                                     // Enable depth testing
         this.GL.depthFunc(this.GL.LEQUAL);                                      // Near things obscure far things
         this.GL.clear(this.GL.COLOR_BUFFER_BIT | this.GL.DEPTH_BUFFER_BIT);     // Clear the color as well as the depth buffer.
