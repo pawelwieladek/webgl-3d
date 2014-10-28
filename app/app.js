@@ -12,21 +12,21 @@ function main() {
     keyboard.bind(Keys.S, camera, camera.rotatePitchPlus);
     keyboard.bind(Keys.A, camera, camera.rotateYawMinus);
     keyboard.bind(Keys.D, camera, camera.rotateYawPlus);
-    keyboard.bind(Keys.Q, camera, camera.rotateRollMinus);
-    keyboard.bind(Keys.E, camera, camera.rotateRollPlus);
 
     var canvas = document.getElementById("gl-canvas");
     var webGL = new WebGL(canvas);
 
     var scene = new Scene(webGL, camera);
 
-    var rectangle = scene.drawableFactory.createDrawable(new Cube(Colors.Red));
+    var r1 = scene.drawableFactory.createDrawable(new Cube(Colors.Red));
+    mat4.identity(r1.modelMatrix);
+    mat4.translate(r1.modelMatrix, r1.modelMatrix, vec3.fromValues(0.0, 0.0, 3.0));
+    scene.add(r1);
 
-    mat4.identity(rectangle.modelMatrix);
-    mat4.translate(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(0.0, -0.5, 3.0));
-    mat4.scale(rectangle.modelMatrix, rectangle.modelMatrix, vec3.fromValues(6.0, 1.0, 6.0));
-
-    scene.add(rectangle);
+    var r2 = scene.drawableFactory.createDrawable(new Cube(Colors.Green));
+    mat4.identity(r2.modelMatrix);
+    mat4.translate(r2.modelMatrix, r2.modelMatrix, vec3.fromValues(0.0, 0.0, -3.0));
+    scene.add(r2);
 
     var animation = new Animation(scene);
     animation.addHandler(keyboard);
