@@ -30,7 +30,7 @@
         varying vec4 position;
 
         void main(void) {
-            position = modelMatrix * viewMatrix * vec4(vertexPosition, 1.0);
+            position = viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
             color = vertexColor;
             normal = normalMatrix * vertexNormal;
             gl_Position = projectionMatrix * position;
