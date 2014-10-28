@@ -4291,35 +4291,6 @@ if(typeof(exports) !== 'undefined') {
   })(shim.exports);
 })(this);
 
-function Animation(scene) {
-    this.scene = scene;
-    this.handlers = [];
-
-    window.requestAnimFrame = (function(callback) {
-        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-            function(callback) {
-                window.setTimeout(callback, 1000 / 60);
-            };
-    })();
-}
-
-Animation.prototype = {
-    addHandler: function(handler) {
-        this.handlers.push(handler);
-    },
-    start: function() {
-        var scene = this.scene;
-        var animation = this;
-        function tick() {
-            requestAnimFrame(tick);
-            animation.handlers.forEach(function(handler) {
-                handler.handle();
-            });
-            scene.draw();
-        }
-        tick();
-    }
-};
 function VertexBufferObject(GL) {
     this.GL = GL;
     this.buffer = this.GL.createBuffer();
@@ -4614,11 +4585,22 @@ function Scene(webGL, camera) {
     this.factory = new Factory(this.GL, this.shaderProgram);
     this.drawables = [];
     this.lights = [];
+    this.handlers = [];
+
+    window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+            function(callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
 }
 
 Scene.prototype = {
     getCamera: function() {
         return this.camera;
+    },
+    getFactory: function() {
+        return this.factory;
     },
     clear: function() {
         this.GL.viewport(0, 0, this.GL.viewportWidth, this.GL.viewportHeight);
@@ -4641,6 +4623,20 @@ Scene.prototype = {
         this.drawables.forEach(function(drawable) {
             drawable.draw(projectionMatrix, viewMatrix);
         });
+    },
+    addHandler: function(handler) {
+        this.handlers.push(handler);
+    },
+    start: function() {
+        var self = this;
+        function tick() {
+            requestAnimFrame(tick);
+            self.handlers.forEach(function(handler) {
+                handler.handle();
+            });
+            self.draw();
+        }
+        tick();
     }
 };
 function ShaderProgram(GL) {
