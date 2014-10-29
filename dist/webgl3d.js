@@ -4569,10 +4569,10 @@ function DirectionalLight(shaderProgram, lightOptions) {
 }
 
 DirectionalLight.prototype = {
-    apply: function() {
-        this.shaderProgram.setUniformVector3("directionalLight.direction", this.direction);
-        this.shaderProgram.setUniformVector3("directionalLight.diffuseColor", this.diffuseColor);
-        this.shaderProgram.setUniformVector3("directionalLight.ambientColor", this.ambientColor);
+    apply: function(index) {
+        this.shaderProgram.setUniformVector3("directionalLights[" + index + "].direction", this.direction);
+        this.shaderProgram.setUniformVector3("directionalLights[" + index + "].diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("directionalLights[" + index + "].ambientColor", this.ambientColor);
     }
 };
 
@@ -4587,13 +4587,13 @@ function PointLight(shaderProgram, lightOptions) {
 }
 
 PointLight.prototype = {
-    apply: function() {
-        this.shaderProgram.setUniformVector3("pointLight.position", this.position);
-        this.shaderProgram.setUniformVector3("pointLight.diffuseColor", this.diffuseColor);
-        this.shaderProgram.setUniformVector3("pointLight.ambientColor", this.ambientColor);
-        this.shaderProgram.setUniformFloat("pointLight.constantAttenuation", this.constantAttenuation);
-        this.shaderProgram.setUniformFloat("pointLight.linearAttenuation", this.linearAttenuation);
-        this.shaderProgram.setUniformFloat("pointLight.exponentAttenuation", this.exponentAttenuation);
+    apply: function(index) {
+        this.shaderProgram.setUniformVector3("pointLights[" + index + "].position", this.position);
+        this.shaderProgram.setUniformVector3("pointLights[" + index + "].diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("pointLights[" + index + "].ambientColor", this.ambientColor);
+        this.shaderProgram.setUniformFloat("pointLights[" + index + "].constantAttenuation", this.constantAttenuation);
+        this.shaderProgram.setUniformFloat("pointLights[" + index + "].linearAttenuation", this.linearAttenuation);
+        this.shaderProgram.setUniformFloat("pointLights[" + index + "].exponentAttenuation", this.exponentAttenuation);
     }
 };
 
@@ -4608,13 +4608,13 @@ function SpotLight(shaderProgram, lightOptions) {
 }
 
 SpotLight.prototype = {
-    apply: function() {
-        this.shaderProgram.setUniformVector3("spotLight.position", this.position);
-        this.shaderProgram.setUniformVector3("spotLight.direction", this.direction);
-        this.shaderProgram.setUniformVector3("spotLight.diffuseColor", this.diffuseColor);
-        this.shaderProgram.setUniformFloat("spotLight.cosOuterAngle", Math.cos(this.outerAngle * Math.PI / 180));
-        this.shaderProgram.setUniformFloat("spotLight.cosInnerAngle", Math.cos(this.innerAngle * Math.PI / 180));
-        this.shaderProgram.setUniformFloat("spotLight.range", this.range);
+    apply: function(index) {
+        this.shaderProgram.setUniformVector3("spotLights[" + index + "].position", this.position);
+        this.shaderProgram.setUniformVector3("spotLights[" + index + "].direction", this.direction);
+        this.shaderProgram.setUniformVector3("spotLights[" + index + "].diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformFloat("spotLights[" + index + "].cosOuterAngle", Math.cos(this.outerAngle * Math.PI / 180));
+        this.shaderProgram.setUniformFloat("spotLights[" + index + "].cosInnerAngle", Math.cos(this.innerAngle * Math.PI / 180));
+        this.shaderProgram.setUniformFloat("spotLights[" + index + "].range", this.range);
     }
 };
 function Material(shaderProgram, color) {
@@ -4644,7 +4644,11 @@ function Scene(webGL, camera) {
     this.camera = new Camera();
     this.factory = new Factory(this.GL, this.shaderProgram);
     this.drawables = [];
-    this.lights = [];
+    this.lights = {
+        directional: [],
+        point: [],
+        spot: []
+    };
     this.handlers = [];
 
     window.requestAnimFrame = (function(callback) {
@@ -4670,14 +4674,31 @@ Scene.prototype = {
     addDrawable: function(drawable) {
         this.drawables.push(drawable);
     },
-    addLight: function(light) {
-        this.lights.push(light);
+    addDirectionalLight: function(light) {
+        this.lights.directional.push(light);
+    },
+    addPointLight: function(light) {
+        this.lights.point.push(light);
+    },
+    addSpotLight: function(light) {
+        this.lights.spot.push(light);
     },
     draw: function() {
         this.clear();
-        this.lights.forEach(function(light) {
-            light.apply();
+        this.lights.directional.forEach(function(light, index) {
+            light.apply(index);
         });
+        this.lights.point.forEach(function(light, index) {
+            light.apply(index);
+        });
+        this.lights.spot.forEach(function(light, index) {
+            light.apply(index);
+        });
+
+        this.shaderProgram.setUniformInteger("directionalLightsCount", this.lights.directional.length);
+        this.shaderProgram.setUniformInteger("pointLightsCount", this.lights.point.length);
+        this.shaderProgram.setUniformInteger("spotLightsCount", this.lights.spot.length);
+
         var projectionMatrix = this.projectionMatrix;
         var viewMatrix = this.camera.getViewMatrix();
         this.drawables.forEach(function(drawable) {

@@ -5,7 +5,11 @@ function Scene(webGL, camera) {
     this.camera = new Camera();
     this.factory = new Factory(this.GL, this.shaderProgram);
     this.drawables = [];
-    this.lights = [];
+    this.lights = {
+        directional: [],
+        point: [],
+        spot: []
+    };
     this.handlers = [];
 
     window.requestAnimFrame = (function(callback) {
@@ -31,14 +35,31 @@ Scene.prototype = {
     addDrawable: function(drawable) {
         this.drawables.push(drawable);
     },
-    addLight: function(light) {
-        this.lights.push(light);
+    addDirectionalLight: function(light) {
+        this.lights.directional.push(light);
+    },
+    addPointLight: function(light) {
+        this.lights.point.push(light);
+    },
+    addSpotLight: function(light) {
+        this.lights.spot.push(light);
     },
     draw: function() {
         this.clear();
-        this.lights.forEach(function(light) {
-            light.apply();
+        this.lights.directional.forEach(function(light, index) {
+            light.apply(index);
         });
+        this.lights.point.forEach(function(light, index) {
+            light.apply(index);
+        });
+        this.lights.spot.forEach(function(light, index) {
+            light.apply(index);
+        });
+
+        this.shaderProgram.setUniformInteger("directionalLightsCount", this.lights.directional.length);
+        this.shaderProgram.setUniformInteger("pointLightsCount", this.lights.point.length);
+        this.shaderProgram.setUniformInteger("spotLightsCount", this.lights.spot.length);
+
         var projectionMatrix = this.projectionMatrix;
         var viewMatrix = this.camera.getViewMatrix();
         this.drawables.forEach(function(drawable) {

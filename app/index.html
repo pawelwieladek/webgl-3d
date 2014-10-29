@@ -5,7 +5,7 @@
     <script id="shader-fs" type="x-shader/x-fragment">
         precision highp float;
 
-        const int MAX_DIRECTIONAL_LIGHTS = 10;
+        const int MAX_LIGHTS = 10;
 
         varying vec3 normal;
         varying vec4 position;
@@ -39,9 +39,14 @@
         };
 
         uniform Material material;
-        uniform DirectionalLight directionalLight;
-        uniform PointLight pointLight;
-        uniform SpotLight spotLight;
+
+        uniform int directionalLightsCount;
+        uniform int pointLightsCount;
+        uniform int spotLightsCount;
+
+        uniform DirectionalLight directionalLights[MAX_LIGHTS];
+        uniform PointLight pointLights[MAX_LIGHTS];
+        uniform SpotLight spotLights[MAX_LIGHTS];
 
         vec4 getDirectionalLightColor(const DirectionalLight directionalLight, vec3 normal) {
             float diffuse = max(0.0, dot(normal, -directionalLight.direction));
@@ -72,9 +77,19 @@
         }
 
         void main(void) {
-            vec4 color = getDirectionalLightColor(directionalLight, normal);
-            color += getPointLightColor(pointLight, position.xyz, normal);
-            color += getSpotLightColor(spotLight, position.xyz, normal);
+            vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
+
+            for(int i = 0; i < MAX_LIGHTS; i++) {
+                if(i < directionalLightsCount)
+                    color += getDirectionalLightColor(directionalLights[i], normal);
+
+                if(i < pointLightsCount)
+                    color += getPointLightColor(pointLights[i], position.xyz, normal);
+
+                if(i < spotLightsCount)
+                    color += getSpotLightColor(spotLights[i], position.xyz, normal);
+            }
+
             gl_FragColor = vec4(material.color, 1.0) * color;
         }
     </script>

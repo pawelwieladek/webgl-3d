@@ -9,7 +9,6 @@ function main() {
     var white = factory.material(Colors.White);
     var black = factory.material(Colors.Black);
     var yellow = factory.material(Colors.Yellow);
-    var blue = factory.material(Colors.Cyan);
 
     var hall = factory.drawable(new Cube(), white);
     mat4.identity(hall.modelMatrix);
@@ -31,29 +30,35 @@ function main() {
     net.scale(vec3.fromValues(2.5, 0.5, 1.0));
     scene.addDrawable(net);
 
-    var pointLightOptions = {
+    var pointLight1 = factory.pointLight({
         position: vec3.fromValues(0.5, 1.0, 0.5),
         ambientColor: vec3.fromValues(0.1, 0.1, 0.1),
         diffuseColor: vec3.fromValues(0.3, 0.3, 0.3),
         constantAttenuation: 0.1,
         linearAttenuation: 0.1,
         exponentAttenuation: 0.0
-    };
+    });
+    scene.addPointLight(pointLight1);
 
-    var pointLight = factory.pointLight(pointLightOptions);
-    scene.addLight(pointLight);
-
-    var spotLightOptions = {
+    var spotLight1 = factory.spotLight({
         position: vec3.fromValues(0.0, 0.0, 0.0),
         direction: vec3.fromValues(0.0, -1.0, 0.0),
         diffuseColor: vec3.fromValues(0.7, 0.7, 0.7),
-        outerAngle: 90,
+        outerAngle: 40,
         innerAngle: 30,
         range: 10.0
-    };
+    });
+    scene.addSpotLight(spotLight1);
 
-    var spotLight = factory.spotLight(spotLightOptions);
-    scene.addLight(spotLight);
+    var spotLight2 = factory.spotLight({
+        position: vec3.fromValues(4.0, 0.0, 0.0),
+        direction: vec3.fromValues(0.0, -1.0, 0.0),
+        diffuseColor: vec3.fromValues(0.7, 0.7, 0.7),
+        outerAngle: 40,
+        innerAngle: 30,
+        range: 10.0
+    });
+    scene.addSpotLight(spotLight2);
 
     var camera = scene.getCamera();
     camera.setPosition(vec3.fromValues(0.0, -1.0, 6.0));
