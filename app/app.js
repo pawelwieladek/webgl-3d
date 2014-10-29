@@ -31,14 +31,28 @@ function main() {
     net.scale(vec3.fromValues(2.5, 0.5, 1.0));
     scene.addDrawable(net);
 
-    var pointLightPosition = vec3.fromValues(0.5, 1.0, 0.5);
-    var pointLightAmbient = vec3.fromValues(0.1, 0.1, 0.1);
-    var pointLightDiffuse = vec3.fromValues(0.3, 0.3, 0.3);
+    var pointLightOptions = {
+        position: vec3.fromValues(0.5, 1.0, 0.5),
+        ambientColor: vec3.fromValues(0.1, 0.1, 0.1),
+        diffuseColor: vec3.fromValues(0.3, 0.3, 0.3),
+        constantAttenuation: 0.1,
+        linearAttenuation: 0.1,
+        exponentAttenuation: 0.0
+    };
 
-    var pointLight = factory.pointLight(pointLightPosition, pointLightAmbient, pointLightDiffuse, 0.5, 0.03, 0.005);
+    var pointLight = factory.pointLight(pointLightOptions);
     scene.addLight(pointLight);
 
-    var spotLight = factory.spotLight(vec3.fromValues(0.0, 0.0, 5.0), vec3.fromValues(0.7, 0.7, 0.7), vec3.fromValues(0.0, 0.0, -1.0), Math.cos(15 * Math.PI / 180), Math.cos(5 * Math.PI / 180), 30.0);
+    var spotLightOptions = {
+        position: vec3.fromValues(0.0, 0.0, 0.0),
+        direction: vec3.fromValues(0.0, -1.0, 0.0),
+        diffuseColor: vec3.fromValues(0.7, 0.7, 0.7),
+        outerAngle: 90,
+        innerAngle: 30,
+        range: 10.0
+    };
+
+    var spotLight = factory.spotLight(spotLightOptions);
     scene.addLight(spotLight);
 
     var camera = scene.getCamera();

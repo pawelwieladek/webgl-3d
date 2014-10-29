@@ -4487,14 +4487,14 @@ Factory.prototype = {
     material: function(color) {
         return new Material(this.shaderProgram, color);
     },
-    directionalLight: function(direction, ambientColor, diffuseColor) {
-        return new DirectionalLight(this.shaderProgram, direction, ambientColor, diffuseColor);
+    directionalLight: function(lightOptions) {
+        return new DirectionalLight(this.shaderProgram, lightOptions);
     },
-    pointLight: function(position, ambientColor, diffuseColor, constant, linear, exponent) {
-        return new PointLight(this.shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent);
+    pointLight: function(lightOptions) {
+        return new PointLight(this.shaderProgram, lightOptions);
     },
-    spotLight: function(position, diffuseColor, direction, cosOuter, cosInner, range) {
-        return new SpotLight(this.shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range);
+    spotLight: function(lightOptions) {
+        return new SpotLight(this.shaderProgram, lightOptions);
     }
 };
 var Keys = {
@@ -4561,11 +4561,11 @@ Keyboard.prototype = {
         }
     }
 };
-function DirectionalLight(shaderProgram, direction, ambientColor, diffuseColor) {
+function DirectionalLight(shaderProgram, lightOptions) {
     this.shaderProgram = shaderProgram;
-    this.direction = direction;
-    this.ambientColor = ambientColor;
-    this.diffuseColor = diffuseColor;
+    this.direction = lightOptions.direction;
+    this.ambientColor = lightOptions.ambientColor;
+    this.diffuseColor = lightOptions.diffuseColor;
 }
 
 DirectionalLight.prototype = {
@@ -4576,14 +4576,14 @@ DirectionalLight.prototype = {
     }
 };
 
-function PointLight(shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent) {
+function PointLight(shaderProgram, lightOptions) {
     this.shaderProgram = shaderProgram;
-    this.position = position;
-    this.ambientColor = ambientColor;
-    this.diffuseColor = diffuseColor;
-    this.constantAttenuation = constant;
-    this.linearAttenuation = linear;
-    this.exponentAttenuation = exponent;
+    this.position = lightOptions.position;
+    this.ambientColor = lightOptions.ambientColor;
+    this.diffuseColor = lightOptions.diffuseColor;
+    this.constantAttenuation = lightOptions.constantAttenuation;
+    this.linearAttenuation = lightOptions.linearAttenuation;
+    this.exponentAttenuation = lightOptions.exponentAttenuation;
 }
 
 PointLight.prototype = {
@@ -4597,23 +4597,23 @@ PointLight.prototype = {
     }
 };
 
-function SpotLight(shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range) {
+function SpotLight(shaderProgram, lightOptions) {
     this.shaderProgram = shaderProgram;
-    this.position = position;
-    this.diffuseColor = diffuseColor;
-    this.direction = direction;
-    this.cosOuter = cosOuter;
-    this.cosInner = cosInner;
-    this.range = range;
+    this.position = lightOptions.position;
+    this.direction = lightOptions.direction;
+    this.diffuseColor = lightOptions.diffuseColor;
+    this.outerAngle = lightOptions.outerAngle;
+    this.innerAngle = lightOptions.innerAngle;
+    this.range = lightOptions.range;
 }
 
 SpotLight.prototype = {
     apply: function() {
         this.shaderProgram.setUniformVector3("spotLight.position", this.position);
-        this.shaderProgram.setUniformVector3("spotLight.diffuseColor", this.diffuseColor);
         this.shaderProgram.setUniformVector3("spotLight.direction", this.direction);
-        this.shaderProgram.setUniformFloat("spotLight.cosOuterAngle", this.cosOuter);
-        this.shaderProgram.setUniformFloat("spotLight.cosInnerAngle", this.cosInner);
+        this.shaderProgram.setUniformVector3("spotLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformFloat("spotLight.cosOuterAngle", Math.cos(this.outerAngle * Math.PI / 180));
+        this.shaderProgram.setUniformFloat("spotLight.cosInnerAngle", Math.cos(this.innerAngle * Math.PI / 180));
         this.shaderProgram.setUniformFloat("spotLight.range", this.range);
     }
 };
