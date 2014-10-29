@@ -69,18 +69,23 @@ ShaderProgram.prototype = {
         this.uniforms[name] = this.GL.getUniformLocation(this.shaderProgram, name);
     },
     setUniformMatrix4: function(key, matrix) {
+        this.addUniform(key);
         this.GL.uniformMatrix4fv(this.uniforms[key], false, matrix);
     },
     setUniformMatrix3: function(key, matrix) {
+        this.addUniform(key);
         this.GL.uniformMatrix3fv(this.uniforms[key], false, matrix);
     },
     setUniformVector3: function(key, vector3) {
+        this.addUniform(key);
         this.GL.uniform3fv(this.uniforms[key], vector3);
     },
     setUniformFloat: function(key, value) {
+        this.addUniform(key);
         this.GL.uniform1f(this.uniforms[key], value);
     },
     setUniformInteger: function(key, value) {
+        this.addUniform(key);
         this.GL.uniform1i(this.uniforms[key], value);
     }
 };
