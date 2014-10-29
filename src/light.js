@@ -33,3 +33,24 @@ PointLight.prototype = {
         this.shaderProgram.setUniformFloat("pointLight.exponentAttenuation", this.exponentAttenuation);
     }
 };
+
+function SpotLight(shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range) {
+    this.shaderProgram = shaderProgram;
+    this.position = position;
+    this.diffuseColor = diffuseColor;
+    this.direction = direction;
+    this.cosOuter = cosOuter;
+    this.cosInner = cosInner;
+    this.range = range;
+}
+
+SpotLight.prototype = {
+    apply: function() {
+        this.shaderProgram.setUniformVector3("spotLight.position", this.position);
+        this.shaderProgram.setUniformVector3("spotLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("spotLight.direction", this.direction);
+        this.shaderProgram.setUniformFloat("spotLight.cosOuterAngle", this.cosOuter);
+        this.shaderProgram.setUniformFloat("spotLight.cosInnerAngle", this.cosInner);
+        this.shaderProgram.setUniformFloat("spotLight.range", this.range);
+    }
+};

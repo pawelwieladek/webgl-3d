@@ -31,11 +31,15 @@ function main() {
     net.scale(vec3.fromValues(2.5, 0.5, 1.0));
     scene.addDrawable(net);
 
-    var position = vec3.fromValues(0.5, 1.0, 0.5);
-    var ambient = vec3.fromValues(0.3, 0.3, 0.3);
-    var diffuse = vec3.fromValues(0.7, 0.7, 0.7);
-    var light = factory.pointLight(position, ambient, diffuse, 0.5, 0.03, 0.005);
-    scene.addLight(light);
+    var pointLightPosition = vec3.fromValues(0.5, 1.0, 0.5);
+    var pointLightAmbient = vec3.fromValues(0.1, 0.1, 0.1);
+    var pointLightDiffuse = vec3.fromValues(0.3, 0.3, 0.3);
+
+    var pointLight = factory.pointLight(pointLightPosition, pointLightAmbient, pointLightDiffuse, 0.5, 0.03, 0.005);
+    scene.addLight(pointLight);
+
+    var spotLight = factory.spotLight(vec3.fromValues(0.0, 2.0, 0.0), vec3.fromValues(0.7, 0.7, 0.7), vec3.fromValues(0.0, -1.0, 0.0), Math.cos(45 * Math.PI / 180), Math.cos(30 * Math.PI / 180), 30.0);
+    scene.addLight(spotLight);
 
     var camera = scene.getCamera();
     camera.setPosition(vec3.fromValues(0.0, -1.0, 6.0));

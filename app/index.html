@@ -15,23 +15,33 @@
         };
 
         struct DirectionalLight {
+            vec3 direction;
             vec3 diffuseColor;
             vec3 ambientColor;
-            vec3 direction;
         };
 
         struct PointLight {
+            vec3 position;
             vec3 ambientColor;
             vec3 diffuseColor;
-            vec3 position;
             float constantAttenuation;
             float linearAttenuation;
             float exponentAttenuation;
         };
 
+        struct SpotLight {
+            vec3 position;
+            vec3 diffuseColor;
+            vec3 direction;
+            float cosOuterAngle;
+            float cosInnerAngle;
+            float range;
+        };
+
         uniform Material material;
         uniform DirectionalLight directionalLight;
         uniform PointLight pointLight;
+        uniform SpotLight spotLight;
 
         vec4 getDirectionalLightColor(const DirectionalLight directionalLight, vec3 normal) {
             float diffuse = max(0.0, dot(normal, -directionalLight.direction));
@@ -49,9 +59,22 @@
             return vec4(pointLight.ambientColor + pointLight.diffuseColor * diffuse / attenuation, 1.0);
         }
 
+        vec4 getSpotLightColor(const SpotLight spotLight, vec3 position, vec3 normal) {
+            vec3 L = spotLight.position - position;
+            float distance = length(L);
+            L = normalize(L);
+
+            float spotEffect = smoothstep(spotLight.cosOuterAngle, spotLight.cosInnerAngle, dot(L, -spotLight.direction));
+            float attenuation = smoothstep(spotLight.range, 0.0, distance);
+            float diffuse = max(dot(normal, L), 0.0);
+
+            return vec4(diffuse * spotLight.diffuseColor * spotEffect * attenuation, 1.0);
+        }
+
         void main(void) {
             vec4 color = getDirectionalLightColor(directionalLight, normal);
             color += getPointLightColor(pointLight, position.xyz, normal);
+            color += getSpotLightColor(spotLight, position.xyz, normal);
             gl_FragColor = vec4(material.color, 1.0) * color;
         }
     </script>

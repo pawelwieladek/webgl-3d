@@ -4492,6 +4492,9 @@ Factory.prototype = {
     },
     pointLight: function(position, ambientColor, diffuseColor, constant, linear, exponent) {
         return new PointLight(this.shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent);
+    },
+    spotLight: function(position, diffuseColor, direction, cosOuter, cosInner, range) {
+        return new SpotLight(this.shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range);
     }
 };
 var Keys = {
@@ -4591,6 +4594,27 @@ PointLight.prototype = {
         this.shaderProgram.setUniformFloat("pointLight.constantAttenuation", this.constantAttenuation);
         this.shaderProgram.setUniformFloat("pointLight.linearAttenuation", this.linearAttenuation);
         this.shaderProgram.setUniformFloat("pointLight.exponentAttenuation", this.exponentAttenuation);
+    }
+};
+
+function SpotLight(shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range) {
+    this.shaderProgram = shaderProgram;
+    this.position = position;
+    this.diffuseColor = diffuseColor;
+    this.direction = direction;
+    this.cosOuter = cosOuter;
+    this.cosInner = cosInner;
+    this.range = range;
+}
+
+SpotLight.prototype = {
+    apply: function() {
+        this.shaderProgram.setUniformVector3("spotLight.position", this.position);
+        this.shaderProgram.setUniformVector3("spotLight.diffuseColor", this.diffuseColor);
+        this.shaderProgram.setUniformVector3("spotLight.direction", this.direction);
+        this.shaderProgram.setUniformFloat("spotLight.cosOuterAngle", this.cosOuter);
+        this.shaderProgram.setUniformFloat("spotLight.cosInnerAngle", this.cosInner);
+        this.shaderProgram.setUniformFloat("spotLight.range", this.range);
     }
 };
 function Material(shaderProgram, color) {
@@ -4812,6 +4836,13 @@ function WebGL(canvas) {
         shaderProgram.addUniform("pointLight.constantAttenuation");
         shaderProgram.addUniform("pointLight.linearAttenuation");
         shaderProgram.addUniform("pointLight.exponentAttenuation");
+
+        shaderProgram.addUniform("spotLight.position");
+        shaderProgram.addUniform("spotLight.diffuseColor");
+        shaderProgram.addUniform("spotLight.direction");
+        shaderProgram.addUniform("spotLight.cosOuterAngle");
+        shaderProgram.addUniform("spotLight.cosInnerAngle");
+        shaderProgram.addUniform("spotLight.range");
     }
 
     initGL(canvas);

@@ -15,5 +15,8 @@ Factory.prototype = {
     },
     pointLight: function(position, ambientColor, diffuseColor, constant, linear, exponent) {
         return new PointLight(this.shaderProgram, position, ambientColor, diffuseColor, constant, linear, exponent);
+    },
+    spotLight: function(position, diffuseColor, direction, cosOuter, cosInner, range) {
+        return new SpotLight(this.shaderProgram, position, diffuseColor, direction, cosOuter, cosInner, range);
     }
 };

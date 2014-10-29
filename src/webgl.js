@@ -49,6 +49,13 @@ function WebGL(canvas) {
         shaderProgram.addUniform("pointLight.constantAttenuation");
         shaderProgram.addUniform("pointLight.linearAttenuation");
         shaderProgram.addUniform("pointLight.exponentAttenuation");
+
+        shaderProgram.addUniform("spotLight.position");
+        shaderProgram.addUniform("spotLight.diffuseColor");
+        shaderProgram.addUniform("spotLight.direction");
+        shaderProgram.addUniform("spotLight.cosOuterAngle");
+        shaderProgram.addUniform("spotLight.cosInnerAngle");
+        shaderProgram.addUniform("spotLight.range");
     }
 
     initGL(canvas);
