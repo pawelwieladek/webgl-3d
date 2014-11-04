@@ -9,6 +9,7 @@ function main() {
     var white = factory.material(Colors.White);
     var black = factory.material(Colors.Black);
     var yellow = factory.material(Colors.Yellow);
+    var red = factory.material(Colors.Red);
 
     var hall = factory.drawable(new Cube(), white);
     mat4.identity(hall.modelMatrix);
@@ -43,8 +44,8 @@ function main() {
     var spotLight1 = factory.spotLight({
         position: vec3.fromValues(0.0, 0.0, 0.0),
         direction: vec3.fromValues(0.0, -1.0, 0.0),
-        diffuseColor: vec3.fromValues(0.7, 0.7, 0.7),
-        outerAngle: 40,
+        diffuseColor: vec3.fromValues(0.0, 0.0, 1.0),
+        outerAngle: 60,
         innerAngle: 30,
         range: 10.0
     });
@@ -53,12 +54,41 @@ function main() {
     var spotLight2 = factory.spotLight({
         position: vec3.fromValues(4.0, 0.0, 0.0),
         direction: vec3.fromValues(0.0, -1.0, 0.0),
-        diffuseColor: vec3.fromValues(0.7, 0.7, 0.7),
-        outerAngle: 40,
+        diffuseColor: vec3.fromValues(1.0, 1.0, 0.0),
+        outerAngle: 60,
         innerAngle: 30,
         range: 10.0
     });
+
     scene.addSpotLight(spotLight2);
+
+    var colorStart = 0.0;
+    var colorStep = 0.02;
+
+    setInterval(function() {
+        if(colorStart  > 1.0 || colorStart  < 0.0)
+            colorStep *= -1;
+
+        colorStart += colorStep;
+
+        spotLight1.diffuseColor = vec3.fromValues(colorStart, 0.0, 1.0);
+        spotLight2.diffuseColor = vec3.fromValues(1.0, 1.0, colorStart);
+    }, 50);
+
+
+
+    var second = factory.drawable(new Cube(), red);
+    second.translate(vec3.fromValues(0.0, -2.0, -5.0));
+    second.scale(vec3.fromValues(0.5, 0.8, 0.5));
+    scene.addDrawable(second);
+    var first = factory.drawable(new Cube(), red);
+    first.translate(vec3.fromValues(-1.0, -2.0, -5.0));
+    first.scale(vec3.fromValues(0.5, 0.6, 0.5));
+    scene.addDrawable(first);
+    var third = factory.drawable(new Cube(), red);
+    third.translate(vec3.fromValues(1.0, -2.0, -5.0));
+    third.scale(vec3.fromValues(0.5, 0.4, 0.5));
+    scene.addDrawable(third);
 
     var camera = scene.getCamera();
     camera.setPosition(vec3.fromValues(0.0, -1.0, 6.0));
